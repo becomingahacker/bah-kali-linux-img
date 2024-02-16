@@ -10,37 +10,41 @@ locals {
 }
 
 provider "aws" {
-    default_tags {
-        tags = {
-            Project = "cloud-cml"
-        }
+  default_tags {
+    tags = {
+      Project = "cloud-cml"
     }
+  }
 }
 
 module "vmimport_role" {
-    source = "./module-vmimport-role"
-    cfg    = local.cfg_file
+  source = "./module-vmimport-role"
+  cfg    = local.cfg_file
 }
 
 resource "aws_imagebuilder_component" "bah_kali_linux_base" {
   data = yamlencode({
-    phases = [{
-      name = "build"
-      steps = [{
-        action = "ExecuteBash"
-        inputs = {
-          commands = ["echo 'hello world'"]
-        }
-        name      = "hello"
-        onFailure = "Continue"
-      }]
-    }]
+    phases = [
+      {
+        name = "build"
+        steps = [
+          {
+            action = "ExecuteBash"
+            inputs = {
+              commands = ["echo 'hello world'"]
+            }
+            name      = "hello"
+            onFailure = "Continue"
+          },
+        ]
+      },
+    ]
     schemaVersion = 1.0
   })
-  name     = "bah_kali_linux_base"
+  name        = "bah_kali_linux_base"
   description = "Build Kali Linux in the Cloud"
-  platform = "Linux"
-  version  = "1.0.0"
+  platform    = "Linux"
+  version     = "1.0.0"
 }
 
 data "aws_key_pair" "bah_kali_linux_key_pair" {
@@ -56,20 +60,20 @@ data "aws_security_group" "bah_kali_linux_security_group" {
 }
 
 data "aws_subnet" "bah_kali_linux_subnet" {
-    filter {
-        name   = "tag:Name"
-        values = [local.cfg.aws.subnet]
-    }
+  filter {
+    name   = "tag:Name"
+    values = [local.cfg.aws.subnet]
+  }
 }
 
 resource "aws_imagebuilder_infrastructure_configuration" "bah_kali_linux_infra_config" {
-  description           = "Infrastructure for building Kali Linux in the Cloud"
-  instance_profile_name = data.aws_iam_instance_profile.bah_kali_linux_instance_profile.name
-  instance_types        = [local.cfg.aws.instance_type]
-  key_pair              = data.aws_key_pair.bah_kali_linux_key_pair.key_name
-  name                  = "bah_kali_linux_infra_config"
-  security_group_ids    = [data.aws_security_group.bah_kali_linux_security_group.id]
-  subnet_id             = data.aws_subnet.bah_kali_linux_subnet.id
+  description                   = "Infrastructure for building Kali Linux in the Cloud"
+  instance_profile_name         = data.aws_iam_instance_profile.bah_kali_linux_instance_profile.name
+  instance_types                = [local.cfg.aws.instance_type]
+  key_pair                      = data.aws_key_pair.bah_kali_linux_key_pair.key_name
+  name                          = "bah_kali_linux_infra_config"
+  security_group_ids            = [data.aws_security_group.bah_kali_linux_security_group.id]
+  subnet_id                     = data.aws_subnet.bah_kali_linux_subnet.id
   terminate_instance_on_failure = true
 
   #sns_topic_arn                 = aws_sns_topic.example.arn
@@ -84,7 +88,7 @@ resource "aws_imagebuilder_infrastructure_configuration" "bah_kali_linux_infra_c
 data "aws_ami" "bah_kali_linux_ami" {
   most_recent = true
 
-  owners      = ["679593333241"] # OffSec
+  owners = ["679593333241"] # OffSec
 
   filter {
     name   = "description"
@@ -141,7 +145,7 @@ resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_distribut
   distribution {
     region = local.cfg.aws.region
     ami_distribution_configuration {
-      name      = "bah-kali-linux {{ imagebuilder:buildDate }}"
+      name        = "bah-kali-linux {{ imagebuilder:buildDate }}"
       description = "BAH Kali Linux AMI"
       ami_tags = {
         Project = "cloud-cml"
@@ -151,10 +155,10 @@ resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_distribut
 }
 
 resource "aws_imagebuilder_image" "bah_kali_linux_image" {
-  image_recipe_arn        = aws_imagebuilder_image_recipe.bah_kali_linux_image_recipe.arn
-  distribution_configuration_arn = aws_imagebuilder_distribution_configuration.bah_kali_linux_distribution.arn
+  image_recipe_arn                 = aws_imagebuilder_image_recipe.bah_kali_linux_image_recipe.arn
+  distribution_configuration_arn   = aws_imagebuilder_distribution_configuration.bah_kali_linux_distribution.arn
   infrastructure_configuration_arn = aws_imagebuilder_infrastructure_configuration.bah_kali_linux_infra_config.arn
   image_tests_configuration {
     image_tests_enabled = false
   }
-} 
+}

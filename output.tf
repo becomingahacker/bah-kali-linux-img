@@ -5,8 +5,8 @@
 #
 
 output "bah_kali_linux_arn" {
-    value = "${aws_imagebuilder_image.bah_kali_linux_image.arn}"
-    description = "ARN of the Kali Linux image"
+  value       = aws_imagebuilder_image.bah_kali_linux_image.arn
+  description = "ARN of the Kali Linux image"
 }
 
 #output "bah_kali_linux_ami_id" {
