@@ -17,6 +17,11 @@ provider "aws" {
     }
 }
 
+module "vmimport_role" {
+    source = "./module-vmimport-role"
+    cfg    = local.cfg_file
+}
+
 resource "aws_imagebuilder_component" "bah_kali_linux_base" {
   data = yamlencode({
     phases = [{
