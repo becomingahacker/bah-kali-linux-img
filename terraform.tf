@@ -16,7 +16,7 @@ terraform {
 
   backend "s3" {
     bucket = "bah-cml-terraform-state"
-    key    = "bah-kali-linux-img"
+    key    = "bah-kali-linux-img/terraform.tfstate"
     region = "us-east-2"
   }
 }

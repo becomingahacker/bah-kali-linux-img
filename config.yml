@@ -1,0 +1,38 @@
+#
+# This file is part of Cisco Modeling Labs
+# Copyright (c) 2019-2023, Cisco Systems, Inc.
+# All rights reserved.
+#
+
+# AWS configs
+aws:
+  region: us-east-2
+  vpc: cmm-vpc
+  availability_zone: us-east-2a
+  subnet: cmm-subnet-public1-us-east-2a
+
+  # The S3 bucket where reference platforms are stored, along with scripts to set up CML
+  bucket: bah-machine-images
+
+  # TODO cmm - CiscoModelingLabs role must not be able to access this bucket
+  # Must be globally unique and updated in terraform.tf backend config
+  tfstate_bucket: "bah-cml-terraform-state"
+  tfstate_key: "bah-kali-linux-img"
+
+  # The EC2 instance type to use when building
+  instance_type: c5d.xlarge
+
+  # The security group to use when building
+  security_group: default
+
+  # IAM Role for EC2 host to assume
+  instance_profile: CiscoModelingLabsBuild
+
+  key_name: bootstrap_ssh
+  disk_size: 16
+
+# TODO cmm - Remove me
+secrets:
+  - &app_password  sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password
+  - &sys_password  sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/sysadmin_password
+  - &license_token sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/license_token
