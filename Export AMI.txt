@@ -174,6 +174,14 @@ real	0m11.453s
 user	0m11.626s
 sys	0m8.797s
 
+root@cml-0:~# scp kali-linux.qcow2 admin@localhost:kali-linux2.qcow2
+admin@localhost's password:
+kali-linux.qcow2                                                                        100% 1639MB  98.4MB/s   00:16
+
+root@cml-0:/var/local/virl2/dropfolder# ls -ltr
+total 1678660
+-rw-r--r-- 1 virl2 virl2 1718943744 Feb 19 19:40 kali-linux2.qcow2
+
 Feb 19 19:22:06 localhost amazon-ssm-agent[579]: 2024-02-19 19:22:06 ERROR [EC2Identity] Failed to get instance info from IMDS. Err: failed to get identity instance id. Error: EC2MetadataError: failed to get IMDSv2 token and fallback to IMDSv1 is disabled
 Feb 19 19:22:06 localhost amazon-ssm-agent[579]: caused by: :
 Feb 19 19:22:06 localhost amazon-ssm-agent[579]:         status code: 0, request id:
@@ -205,3 +213,9 @@ root@cml-0:/var/lib/libvirt/images# find .
 ./virl-base-images/Kali Linux/Kali Linux.yaml
 ./virl-base-images/Kali Linux/kali-linux.qcow2
 ...
+
+systemctl status cloud-init.target
+○ cloud-init.target - Cloud-init target
+     Loaded: loaded (/lib/systemd/system/cloud-init.target; static)
+     Active: inactive (dead)
+
