@@ -17,11 +17,6 @@ provider "aws" {
   }
 }
 
-module "vmimport_role" {
-  source = "./module-vmimport-role"
-  cfg    = local.cfg_file
-}
-
 resource "aws_imagebuilder_component" "bah_kali_linux_base" {
   data = yamlencode({
     phases = [
@@ -31,7 +26,7 @@ resource "aws_imagebuilder_component" "bah_kali_linux_base" {
           {
             action = "ExecuteBash"
             inputs = {
-              commands = ["echo 'hello world'"]
+              commands = ["echo 'hello world3'"]
             }
             name      = "hello"
             onFailure = "Continue"

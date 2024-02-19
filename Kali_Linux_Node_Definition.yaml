@@ -1,0 +1,50 @@
+id: Kali Linux
+general:
+  nature: server
+  read_only: false
+device:
+  interfaces:
+    has_loopback_zero: true
+    physical:
+      - eth0
+      - eth1
+    serial_ports: 1
+    default_count: 2
+    loopback:
+      - Loopback
+ui:
+  visible: true
+  label_prefix: kali-
+  icon: host
+  label: Kali Linux
+sim:
+  linux_native:
+    libvirt_domain_driver: kvm
+    driver: server
+    disk_driver: virtio
+    ram: 4096
+    cpus: 2
+    cpu_limit: 100
+    nic_driver: virtio
+    video:
+      model: virtio
+      memory: 16
+boot:
+  timeout: 10
+inherited:
+  image:
+    ram: true
+    cpus: true
+    cpu_limit: true
+    data_volume: true
+    boot_disk_size: true
+  node:
+    ram: true
+    cpus: true
+    cpu_limit: true
+    data_volume: true
+    boot_disk_size: true
+configuration:
+  generator:
+    driver: server
+schema_version: 0.0.1

@@ -1,0 +1,207 @@
+dpkg -S /usr/bin/qemu-img
+qemu-utils: /usr/bin/qemu-img
+
+aws ec2 describe-images --image-ids ami-04a3d590f7c6f0815
+{
+    "Images": [
+        {
+            "Architecture": "x86_64",
+            "CreationDate": "2024-02-18T22:03:37.000Z",
+            "ImageId": "ami-04a3d590f7c6f0815",
+            "ImageLocation": "181171279649/Kali Base",
+            "ImageType": "machine",
+            "Public": false,
+            "OwnerId": "181171279649",
+            "PlatformDetails": "Linux/UNIX",
+            "UsageOperation": "RunInstances",
+            "State": "available",
+            "BlockDeviceMappings": [
+                {
+                    "DeviceName": "/dev/sda1",
+                    "Ebs": {
+                        "DeleteOnTermination": true,
+                        "Iops": 3000,
+                        "SnapshotId": "snap-07b9e4f16363676de",
+                        "VolumeSize": 16,
+                        "VolumeType": "gp3",
+                        "Encrypted": false
+                    }
+                }
+            ],
+            "EnaSupport": true,
+            "Hypervisor": "xen",
+            "Name": "Kali Base",
+            "RootDeviceName": "/dev/sda1",
+            "RootDeviceType": "ebs",
+            "VirtualizationType": "hvm"
+        }
+    ]
+}
+
+aws ec2 describe-images --image-ids ami-04a3d590f7c6f0815 | jq -r .Images[0].BlockDeviceMappings[0].Ebs.SnapshotId
+snap-07b9e4f16363676de
+
+aws ec2 create-volume --availability-zone us-east-2a --snapshot-id snap-07b9e4f16363676de
+
+An error occurred (UnauthorizedOperation) when calling the CreateVolume operation: You are not authorized to perform this operation. User: arn:aws:sts::181171279649:assumed-role/CiscoModelingLabs/i-0012ff3ed12324a0f is not authorized to perform: ec2:CreateVolume on resource: arn:aws:ec2:us-east-2:181171279649:volume/* because no identity-based policy allows the ec2:CreateVolume action. Encoded authorization failure message: bUz0Cb4cU0pUW25_mRI1Fw7I_O9NzsFg5rLsKnRbZUegtnoHhKRZvjftVQhP-5kqkfhxLadWz1PJ8Z7TlFhJDqB7AwIYf96hmfgklXgXtw5Tfa4WxrgNisbHwLwb1WfGQadBPEfJeZtW31Fg14i0jvwWeSYL40p8fQgIUh4wdCFBSYj9MSP3b00Bj6d0BRuORJXyf_8dVaDoNcBBTh4RohneTCk0kBE7dBjff4R7MScsdMZISGfjJFZ1A-l3aq4tTPgBb_Zc_eq1PsFDU46PcGLeu7pG4k2UladNPAo0XS5E3obW1JWZPY-eNFAr0Azh0FS2oP6jyxyG8W9gl4r6avfo85bCRov56na9gUtPsAvpDbCbQz-5zNgyCm-Mipth_h3cazBtegkS_Ci8Z54abS9YaPNKUfFAB1ewHtQ8PZPjoampacJbjZqcdb4MZxImFIfvy4svHNQ-n-c85qZCZohq_eVs5zCTpPwG1DtQ9DnqwPg0nJvH8snx889aJR9sMxmyayXFvEqNHM7DbSlQ3D34ojxObErRrMWhO9e1LPROGebuxkozCWxCjXHOgpOox1qPZJKeLc5fbnXEcuVujgzU5SVFv4Ycji0cBZNsq3VhJFESJMWWvDOY2tKEFHd4BZ3xfVOQ8XxXots9OWTBvCSryAVGa26lk2k
+
+* Added AmazonEC2FullAccess to CiscoModelingLabsBuild role
+
+aws ec2 create-volume --availability-zone us-east-2a --snapshot-id snap-07b9e4f16363676de
+{
+    "AvailabilityZone": "us-east-2a",
+    "CreateTime": "2024-02-19T18:11:00.000Z",
+    "Encrypted": false,
+    "Size": 16,
+    "SnapshotId": "snap-07b9e4f16363676de",
+    "State": "creating",
+    "VolumeId": "vol-0d9d59cc8ae7c2cc4",
+    "Iops": 100,
+    "Tags": [],
+    "VolumeType": "gp2",
+    "MultiAttachEnabled": false
+}
+
+aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4
+{
+    "Volumes": [
+        {
+            "Attachments": [],
+            "AvailabilityZone": "us-east-2a",
+            "CreateTime": "2024-02-19T18:11:00.798Z",
+            "Encrypted": false,
+            "Size": 16,
+            "SnapshotId": "snap-07b9e4f16363676de",
+            "State": "available",
+            "VolumeId": "vol-0d9d59cc8ae7c2cc4",
+            "Iops": 100,
+            "VolumeType": "gp2",
+            "MultiAttachEnabled": false
+        }
+    ]
+}
+
+aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4 | jq -r .Volumes[0].State
+available
+
+TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 300"`
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id
+i-0012ff3ed12324a0f
+
+aws ec2 attach-volume --device /dev/sdd --instance-id i-0012ff3ed12324a0f --volume-id vol-0d9d59cc8ae7c2cc4
+{
+    "AttachTime": "2024-02-19T18:20:58.034Z",
+    "Device": "/dev/sdd",
+    "InstanceId": "i-0012ff3ed12324a0f",
+    "State": "attaching",
+    "VolumeId": "vol-0d9d59cc8ae7c2cc4"
+}
+
+aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4
+{
+    "Volumes": [
+        {
+            "Attachments": [
+                {
+                    "AttachTime": "2024-02-19T18:20:57.000Z",
+                    "Device": "/dev/sdd",
+                    "InstanceId": "i-0012ff3ed12324a0f",
+                    "State": "attached",
+                    "VolumeId": "vol-0d9d59cc8ae7c2cc4",
+                    "DeleteOnTermination": false
+                }
+            ],
+            "AvailabilityZone": "us-east-2a",
+            "CreateTime": "2024-02-19T18:11:00.798Z",
+            "Encrypted": false,
+            "Size": 16,
+            "SnapshotId": "snap-07b9e4f16363676de",
+            "State": "in-use",
+            "VolumeId": "vol-0d9d59cc8ae7c2cc4",
+            "Iops": 100,
+            "VolumeType": "gp2",
+            "MultiAttachEnabled": false
+        }
+    ]
+}
+
+aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4 | jq -r .Volumes[0].Attachments[0].State
+attached
+
+aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4 | jq -r .Volumes[0].State
+in-use
+
+lsblk /dev/nvme3n1
+NAME         MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+nvme3n1      259:6    0   16G  0 disk
+├─nvme3n1p1  259:7    0 15.9G  0 part
+├─nvme3n1p14 259:8    0    3M  0 part
+└─nvme3n1p15 259:12   0  124M  0 part
+
+aws ec2 detach-volume --device /dev/sdd --instance-id i-0012ff3ed12324a0f --volume-id vol-0d9d59cc8ae7c2cc4
+{
+    "AttachTime": "2024-02-19T18:20:57.000Z",
+    "Device": "/dev/sdd",
+    "InstanceId": "i-0012ff3ed12324a0f",
+    "State": "detaching",
+    "VolumeId": "vol-0d9d59cc8ae7c2cc4"
+}
+
+aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4 | jq -r .Volumes[0].State
+available
+
+time qemu-img convert -f raw -O qcow2 /dev/nvme3n1 kali-linux.qcow2
+
+real	3m5.394s
+user	0m1.762s
+sys	0m12.239s
+
+ls -l kali-linux.qcow2
+-rw-r--r-- 1 root root 1718943744 Feb 19 18:32 kali-linux.qcow2
+
+ls -lh kali-linux.qcow2
+-rw-r--r-- 1 root root 1.7G Feb 19 18:32 kali-linux.qcow2
+
+aws s3 cp kali-linux.qcow2 s3://bah-machine-images/exports/export-ami-04a3d590f7c6f0815.qcow2
+upload failed: ./kali-linux.qcow2 to s3://bah-machine-images/exports/export-ami-04a3d590f7c6f0815.qcow2 An error occurred (AccessDenied) when calling the CreateMultipartUpload operation: Access Denied
+
+* Added AmazonS3FullAccess to CiscoModelingLabsBuild role
+
+time aws s3 cp kali-linux.qcow2 s3://bah-machine-images/exports/export-ami-04a3d590f7c6f0815.qcow2
+upload: ./kali-linux.qcow2 to s3://bah-machine-images/exports/export-ami-04a3d590f7c6f0815.qcow2
+
+real	0m11.453s
+user	0m11.626s
+sys	0m8.797s
+
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: 2024-02-19 19:22:06 ERROR [EC2Identity] Failed to get instance info from IMDS. Err: failed to get identity instance id. Error: EC2MetadataError: failed to get IMDSv2 token and fallback to IMDSv1 is disabled
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: caused by: :
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]:         status code: 0, request id:
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: caused by: RequestError: send request failed
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: caused by: Put "http://169.254.169.254/latest/api/token": dial tcp 169.254.169.254:80: connect: network is unreachable
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: 2024-02-19 19:22:06 INFO Checking if agent identity type CustomIdentity can be assumed
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: 2024-02-19 19:22:06 ERROR Agent failed to assume any identity
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: 2024-02-19 19:22:06 ERROR failed to get identity: failed to find agent identity
+Feb 19 19:22:06 localhost amazon-ssm-agent[579]: 2024-02-19 19:22:06 ERROR Error occurred when starting amazon-ssm-agent: failed to get identity: failed to find agent identity
+Feb 19 19:22:06 localhost systemd[1]: amazon-ssm-agent.service: Deactivated successfully.
+
+# systemctl status amazon-ssm-agent
+● amazon-ssm-agent.service - amazon-ssm-agent
+     Loaded: loaded (/lib/systemd/system/amazon-ssm-agent.service; enabled; pre>
+     Active: activating (auto-restart) since Mon 2024-02-19 19:22:06 UTC; 45s a>
+    Process: 579 ExecStart=/usr/bin/amazon-ssm-agent (code=exited, status=0/SUC>
+   Main PID: 579 (code=exited, status=0/SUCCESS)
+        CPU: 544ms
+
+root@cml-0:/var/lib/libvirt/images# find .
+.
+./.cml
+./node-definitions
+./node-definitions/Kali Linux.yaml
+...
+./virl-base-images
+...
+./virl-base-images/Kali Linux
+./virl-base-images/Kali Linux/Kali Linux.yaml
+./virl-base-images/Kali Linux/kali-linux.qcow2
+...
