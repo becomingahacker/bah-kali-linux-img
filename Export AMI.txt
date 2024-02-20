@@ -1,53 +1,84 @@
 dpkg -S /usr/bin/qemu-img
 qemu-utils: /usr/bin/qemu-img
 
-aws ec2 describe-images --image-ids ami-04a3d590f7c6f0815
+apt update
+apt upgrade -y
+apt install -y qemu-utils jq awscli
+
+mkdir -vp /root/.aws
+cat <<EOF > /root/.aws/config
+[default]
+region = us-east-2
+EOF
+
+aws ec2 describe-images --image-ids ami-03c5b96bb0f05d6d5
 {
     "Images": [
         {
             "Architecture": "x86_64",
-            "CreationDate": "2024-02-18T22:03:37.000Z",
-            "ImageId": "ami-04a3d590f7c6f0815",
-            "ImageLocation": "181171279649/Kali Base",
+            "CreationDate": "2024-02-18T21:03:32.000Z",
+            "ImageId": "ami-03c5b96bb0f05d6d5",
+            "ImageLocation": "181171279649/bah-kali-linux 2024-02-18T20-57-39.054Z",
             "ImageType": "machine",
             "Public": false,
             "OwnerId": "181171279649",
             "PlatformDetails": "Linux/UNIX",
             "UsageOperation": "RunInstances",
+            "ProductCodes": [
+                {
+                    "ProductCodeId": "7lgvy7mt78lgoi4lant0znp5h",
+                    "ProductCodeType": "marketplace"
+                }
+            ],
             "State": "available",
             "BlockDeviceMappings": [
                 {
-                    "DeviceName": "/dev/sda1",
+                    "DeviceName": "/dev/xvda",
                     "Ebs": {
                         "DeleteOnTermination": true,
-                        "Iops": 3000,
-                        "SnapshotId": "snap-07b9e4f16363676de",
+                        "SnapshotId": "snap-0cd4ec86d650d9bf2",
                         "VolumeSize": 16,
-                        "VolumeType": "gp3",
+                        "VolumeType": "gp2",
                         "Encrypted": false
                     }
                 }
             ],
+            "Description": "BAH Kali Linux AMI",
             "EnaSupport": true,
             "Hypervisor": "xen",
-            "Name": "Kali Base",
-            "RootDeviceName": "/dev/sda1",
+            "Name": "bah-kali-linux 2024-02-18T20-57-39.054Z",
+            "RootDeviceName": "/dev/xvda",
             "RootDeviceType": "ebs",
+            "SriovNetSupport": "simple",
+            "Tags": [
+                {
+                    "Key": "Ec2ImageBuilderArn",
+                    "Value": "arn:aws:imagebuilder:us-east-2:181171279649:image/bah-kali-linux-image-recipe/1.0.0/1"
+                },
+                {
+                    "Key": "Project",
+                    "Value": "cloud-cml"
+                },
+                {
+                    "Key": "CreatedBy",
+                    "Value": "EC2 Image Builder"
+                }
+            ],
             "VirtualizationType": "hvm"
         }
     ]
 }
 
-aws ec2 describe-images --image-ids ami-04a3d590f7c6f0815 | jq -r .Images[0].BlockDeviceMappings[0].Ebs.SnapshotId
-snap-07b9e4f16363676de
+aws ec2 describe-images --image-ids ami-03c5b96bb0f05d6d5 | jq -r .Images[0].BlockDeviceMappings[0].Ebs.SnapshotId
+snap-0cd4ec86d650d9bf2
 
-aws ec2 create-volume --availability-zone us-east-2a --snapshot-id snap-07b9e4f16363676de
+aws ec2 create-volume --availability-zone us-east-2a --snapshot-id snap-0cd4ec86d650d9bf2
 
 An error occurred (UnauthorizedOperation) when calling the CreateVolume operation: You are not authorized to perform this operation. User: arn:aws:sts::181171279649:assumed-role/CiscoModelingLabs/i-0012ff3ed12324a0f is not authorized to perform: ec2:CreateVolume on resource: arn:aws:ec2:us-east-2:181171279649:volume/* because no identity-based policy allows the ec2:CreateVolume action. Encoded authorization failure message: bUz0Cb4cU0pUW25_mRI1Fw7I_O9NzsFg5rLsKnRbZUegtnoHhKRZvjftVQhP-5kqkfhxLadWz1PJ8Z7TlFhJDqB7AwIYf96hmfgklXgXtw5Tfa4WxrgNisbHwLwb1WfGQadBPEfJeZtW31Fg14i0jvwWeSYL40p8fQgIUh4wdCFBSYj9MSP3b00Bj6d0BRuORJXyf_8dVaDoNcBBTh4RohneTCk0kBE7dBjff4R7MScsdMZISGfjJFZ1A-l3aq4tTPgBb_Zc_eq1PsFDU46PcGLeu7pG4k2UladNPAo0XS5E3obW1JWZPY-eNFAr0Azh0FS2oP6jyxyG8W9gl4r6avfo85bCRov56na9gUtPsAvpDbCbQz-5zNgyCm-Mipth_h3cazBtegkS_Ci8Z54abS9YaPNKUfFAB1ewHtQ8PZPjoampacJbjZqcdb4MZxImFIfvy4svHNQ-n-c85qZCZohq_eVs5zCTpPwG1DtQ9DnqwPg0nJvH8snx889aJR9sMxmyayXFvEqNHM7DbSlQ3D34ojxObErRrMWhO9e1LPROGebuxkozCWxCjXHOgpOox1qPZJKeLc5fbnXEcuVujgzU5SVFv4Ycji0cBZNsq3VhJFESJMWWvDOY2tKEFHd4BZ3xfVOQ8XxXots9OWTBvCSryAVGa26lk2k
 
 * Added AmazonEC2FullAccess to CiscoModelingLabsBuild role
 
-aws ec2 create-volume --availability-zone us-east-2a --snapshot-id snap-07b9e4f16363676de
+aws ec2 create-volume --availability-zone us-east-2a --snapshot-id snap-0cd4ec86d650d9bf2
 {
     "AvailabilityZone": "us-east-2a",
     "CreateTime": "2024-02-19T18:11:00.000Z",
@@ -96,6 +127,10 @@ aws ec2 attach-volume --device /dev/sdd --instance-id i-0012ff3ed12324a0f --volu
     "State": "attaching",
     "VolumeId": "vol-0d9d59cc8ae7c2cc4"
 }
+
+aws ec2 attach-volume --device /dev/sdd --instance-id i-0128e5d485ed96cee --volume-id vol-0ef440d97cbfe56f3
+
+An error occurred (IncorrectInstanceState) when calling the AttachVolume operation: Cannot attach volume 'vol-0ef440d97cbfe56f3' with Marketplace codes as the instance 'i-0128e5d485ed96cee' is not in the 'stopped' state.
 
 aws ec2 describe-volumes --volume-id vol-0d9d59cc8ae7c2cc4
 {
@@ -218,4 +253,12 @@ systemctl status cloud-init.target
 ○ cloud-init.target - Cloud-init target
      Loaded: loaded (/lib/systemd/system/cloud-init.target; static)
      Active: inactive (dead)
+
+aws secretsmanager get-secret-value --region us-east-2 --secret-id sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password | jq -r .SecretString
+
+PASS="$(aws secretsmanager get-secret-value --region us-east-2 --secret-id sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password | jq -r .SecretString)"
+TOKEN="$(curl -s -k -X 'POST' 'https://cml-0.becomingahacker.com/api/v0/authenticate' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"username": "admin", "password": "'$PASS'"}' | jq -r . )"
 

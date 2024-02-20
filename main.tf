@@ -17,6 +17,8 @@ provider "aws" {
   }
 }
 
+data "aws_region" "current" {}
+
 resource "aws_imagebuilder_component" "bah_kali_linux_base" {
   data = yamlencode({
     phases = [
@@ -106,7 +108,7 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_image_recipe" {
 
     ebs {
       delete_on_termination = true
-      volume_size           = 16
+      volume_size           = local.cfg.aws.disk_size
       volume_type           = "gp2"
     }
   }
@@ -155,5 +157,32 @@ resource "aws_imagebuilder_image" "bah_kali_linux_image" {
   infrastructure_configuration_arn = aws_imagebuilder_infrastructure_configuration.bah_kali_linux_infra_config.arn
   image_tests_configuration {
     image_tests_enabled = false
+  }
+}
+
+
+output "bah_kali_linux_image_ami_id" {
+  value = one(aws_imagebuilder_image.bah_kali_linux_image.output_resources[0].amis).image
+}
+
+data "aws_ami" "bah_kali_linux_image_ami" {
+  filter {
+    name   = "image-id"
+    values = [ one(aws_imagebuilder_image.bah_kali_linux_image.output_resources[0].amis).image ]
+  }
+}
+
+output "bah_kali_linux_image_ami" {
+  value = data.aws_ami.bah_kali_linux_image_ami
+}
+
+resource "aws_ebs_volume" "bah_kali_linux_image_volume" {
+  availability_zone = local.cfg.aws.availability_zone
+  size        = one(data.aws_ami.bah_kali_linux_image_ami.block_device_mappings).ebs.volume_size
+  snapshot_id = one(data.aws_ami.bah_kali_linux_image_ami.block_device_mappings).ebs.snapshot_id
+
+  tags = {
+    Name = "bah-kali-linux-image"
+    Region = data.aws_region.current.name
   }
 }
