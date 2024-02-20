@@ -4,6 +4,12 @@
 # All rights reserved.
 #
 
+# TODO cmm - This URL doesn't have a valid certificate.  Would like to use the
+# Network Load Balancer URL, but it doesn't work with the current configuration
+# from other machines in the VPC.  There is a need to figure out why.  It's
+# probably Security Group related.  For now, we'll use the CML Host URL and
+# disable certificate checking.  This works inside the VPC, but not the best
+# for security.
 cml_controller_url: https://cml-0.becomingahacker.com
 
 # AWS configs
