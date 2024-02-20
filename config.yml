@@ -4,15 +4,14 @@
 # All rights reserved.
 #
 
+cml_controller_url: https://cml-0.becomingahacker.com
+
 # AWS configs
 aws:
   region: us-east-2
   vpc: cmm-vpc
   availability_zone: us-east-2a
   subnet: cmm-subnet-public1-us-east-2a
-
-  # The S3 bucket where reference platforms are stored, along with scripts to set up CML
-  bucket: bah-machine-images
 
   # TODO cmm - CiscoModelingLabs role must not be able to access this bucket
   # Must be globally unique and updated in terraform.tf backend config
@@ -31,8 +30,72 @@ aws:
   key_name: bootstrap_ssh
   disk_size: 16
 
-# TODO cmm - Remove me
 secrets:
-  - &app_password  sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password
-  - &sys_password  sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/sysadmin_password
-  - &license_token sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/license_token
+  app_password: sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password
+
+kali_linux_build_commands:
+  - echo hello world
+
+kali_linux_image_definition:
+  id: kali-linux
+  node_definition_id: kali-linux
+  description: ''
+  label: Kali Linux
+  disk_image: kali-linux.qcow2
+  read_only: false
+  ram: 4096
+  cpus: 2
+  cpu_limit: 100
+  disk_subfolder: kali-linux
+  schema_version: 0.0.1
+
+kali_linux_node_definition:
+  id: kali-linux
+  general:
+    nature: server
+    read_only: false
+  device:
+    interfaces:
+      has_loopback_zero: false
+      physical:
+        - eth0
+        - eth1
+        - eth2
+      serial_ports: 1
+      default_count: 1 
+  ui:
+    visible: true
+    label_prefix: kali-
+    icon: host
+    label: Kali Linux
+  sim:
+    linux_native:
+      libvirt_domain_driver: kvm
+      driver: server
+      disk_driver: virtio
+      ram: 4096
+      cpus: 2
+      cpu_limit: 100
+      nic_driver: virtio
+      video:
+        model: virtio
+        memory: 16
+  boot:
+    timeout: 10
+  inherited:
+    image:
+      ram: true
+      cpus: true
+      cpu_limit: true
+      data_volume: true
+      boot_disk_size: true
+    node:
+      ram: true
+      cpus: true
+      cpu_limit: true
+      data_volume: true
+      boot_disk_size: true
+  configuration:
+    generator:
+      driver: server
+  schema_version: 0.0.1
