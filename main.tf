@@ -134,7 +134,7 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_image_recipe" {
   working_directory = "/"
 
   systems_manager_agent {
-    uninstall_after_build = false
+    uninstall_after_build = true
   }
 }
 
