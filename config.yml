@@ -1,6 +1,6 @@
 #
-# This file is part of Cisco Modeling Labs
-# Copyright (c) 2019-2023, Cisco Systems, Inc.
+# This file is part of Becoming a Hacker Foundations
+# Copyright (c) 2024, Cisco Systems, Inc.
 # All rights reserved.
 #
 
@@ -40,18 +40,27 @@ secrets:
   app_password: sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password
 
 kali_linux_build_commands:
-  - echo hello world
+  - APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"
+  - APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"
+  - DEBIAN_FRONTEND=noninteractive
+  - export APT_OPTS DEBIAN_FRONTEND
+  - apt-get update
+  - apt-get upgrade -y
+  # TODO cmm - What else do we need to install?
+  # https://www.kali.org/docs/general-use/metapackages/
+  #- apt-get install -y kali-desktop-xfce kali-linux-default docker.io
+  - apt-get install -y kali-desktop-xfce docker.io
 
 kali_linux_image_definition:
   id: kali-linux
   node_definition_id: kali-linux
-  description: ''
+  description: Kali Linux with Xfce Desktop Environment
   label: Kali Linux
   disk_image: kali-linux.qcow2
   read_only: false
-  ram: 4096
-  cpus: 2
-  cpu_limit: 100
+  ram:
+  cpus:
+  cpu_limit:
   disk_subfolder: kali-linux
   schema_version: 0.0.1
 
@@ -74,6 +83,11 @@ kali_linux_node_definition:
     label_prefix: kali-
     icon: host
     label: Kali Linux
+    description: |
+      Kali Linux with Xfce Desktop Environment
+
+      Git reference: ${module.git_label.git_label}
+
   sim:
     linux_native:
       libvirt_domain_driver: kvm
@@ -82,6 +96,7 @@ kali_linux_node_definition:
       ram: 4096
       cpus: 2
       cpu_limit: 100
+      boot_disk_size: 32
       nic_driver: virtio
       video:
         model: virtio
@@ -103,5 +118,28 @@ kali_linux_node_definition:
       boot_disk_size: true
   configuration:
     generator:
-      driver: server
+      driver: ubuntu
+    provisioning:
+      volume_name: cidata
+      media_type: iso
+      files:
+        - name: meta-data
+          content: |
+            instance-id: kali
+            local-hostname: kali
+          editable: false
+        - name: user-data
+          content: |
+            #cloud-config
+            hostname: kali-default
+            manage_etc_hosts: True
+            system_info:
+              default_user:
+                name: cisco
+            password: cisco
+            chpasswd: { expire: False }
+            ssh_pwauth: True
+            #ssh_authorized_keys:
+            #   - your-ssh-pubkey-line-goes-here
+          editable: true
   schema_version: 0.0.1

@@ -17,6 +17,10 @@ provider "aws" {
   }
 }
 
+module "git_label" {
+  source = "./module-git-label"
+}
+
 data "aws_region" "current" {}
 
 resource "aws_imagebuilder_component" "bah_kali_linux_base" {
@@ -145,7 +149,7 @@ resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_distribut
       name        = "bah-kali-linux {{ imagebuilder:buildDate }}"
       description = "BAH Kali Linux AMI"
       ami_tags = {
-        Project = "cloud-cml"
+        Name    = "bah-kali-linux {{ imagebuilder:buildDate }}"
       }
     }
   }
@@ -155,10 +159,16 @@ resource "aws_imagebuilder_image" "bah_kali_linux_image" {
   image_recipe_arn                 = aws_imagebuilder_image_recipe.bah_kali_linux_image_recipe.arn
   distribution_configuration_arn   = aws_imagebuilder_distribution_configuration.bah_kali_linux_distribution.arn
   infrastructure_configuration_arn = aws_imagebuilder_infrastructure_configuration.bah_kali_linux_infra_config.arn
+
   image_tests_configuration {
     image_tests_enabled = false
   }
+
   enhanced_image_metadata_enabled = false
+
+  timeouts {
+    create = "60m"
+  }
 }
 
 
@@ -216,8 +226,8 @@ resource "aws_imagebuilder_component" "bah_kali_linux_exporter" {
         name = "build"
         steps = [
           {
-            action = "ExecuteBash"
-            name   = "Install_Dependencies"
+            action    = "ExecuteBash"
+            name      = "Install_Dependencies"
             onFailure = "Abort"
             inputs = {
               commands = [
@@ -252,7 +262,7 @@ resource "aws_imagebuilder_component" "bah_kali_linux_exporter" {
             inputs = [
               {
                 path    = "/root/image_definition.json"
-                content = jsonencode(local.cfg.kali_linux_image_definition)
+                content =  jsonencode(local.cfg.kali_linux_image_definition)
               },
               {
                 path    = "/root/node_definition.json"
@@ -331,11 +341,35 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_exporter_recipe" {
   }
 }
 
+resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_exporter_distribution" {
+  name = "bah_kali_linux_exporter_distribution"
+
+  description = "Distribution for exporting Kali Linux in the Cloud"
+
+  distribution {
+    region = local.cfg.aws.region
+    ami_distribution_configuration {
+      name        = "bah-kali-linux-exporter {{ imagebuilder:buildDate }}"
+      description = "BAH Kali Linux Exporter AMI"
+      ami_tags = {
+        Name = "bah-kali-linux-exporter {{ imagebuilder:buildDate }}"
+      }
+    }
+  }
+}
+
 resource "aws_imagebuilder_image" "bah_kali_linux_exporter" {
   image_recipe_arn                 = aws_imagebuilder_image_recipe.bah_kali_linux_exporter_recipe.arn
+  distribution_configuration_arn   = aws_imagebuilder_distribution_configuration.bah_kali_linux_exporter_distribution.arn
   infrastructure_configuration_arn = aws_imagebuilder_infrastructure_configuration.bah_kali_linux_infra_config.arn
+
   image_tests_configuration {
     image_tests_enabled = false
   }
+
   enhanced_image_metadata_enabled = false
+
+  #timeouts {
+  #  create = "60m"
+  #}
 }
