@@ -44,6 +44,8 @@ kali_linux_build_commands:
   - APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"
   - DEBIAN_FRONTEND=noninteractive
   - export APT_OPTS DEBIAN_FRONTEND
+  - locale-gen "en_US.UTF-8"
+  - dpkg-reconfigure locales
   - apt-get update
   - apt-get upgrade -y
   # TODO cmm - What else do we need to install?
