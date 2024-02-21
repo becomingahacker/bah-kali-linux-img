@@ -52,6 +52,7 @@ kali_linux_build_commands:
   # https://www.kali.org/docs/general-use/metapackages/
   #- apt-get install -y kali-desktop-xfce kali-linux-default docker.io
   - apt-get install -y kali-desktop-xfce docker.io
+  - curl -sSL https://websploit.org/install.sh | bash
 
 kali_linux_image_definition:
   id: kali-linux
@@ -69,6 +70,7 @@ kali_linux_image_definition:
 kali_linux_node_definition:
   id: kali-linux
   general:
+    description: Kali Linux with Xfce Desktop Environment
     nature: server
     read_only: false
   device:
@@ -85,10 +87,7 @@ kali_linux_node_definition:
     label_prefix: kali-
     icon: host
     label: Kali Linux
-    description: |
-      Kali Linux with Xfce Desktop Environment
-
-      Git reference: ${module.git_label.git_label}
+    description: Kali Linux with Xfce Desktop Environment
 
   sim:
     linux_native:
