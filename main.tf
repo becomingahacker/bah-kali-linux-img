@@ -146,10 +146,10 @@ resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_distribut
   distribution {
     region = local.cfg.aws.region
     ami_distribution_configuration {
-      name        = "bah-kali-linux {{ imagebuilder:buildDate }}"
+      name        = "bah-kali-linux-{{ imagebuilder:buildDate }}"
       description = "BAH Kali Linux AMI"
       ami_tags = {
-        Name    = "bah-kali-linux {{ imagebuilder:buildDate }}"
+        Name    = "bah-kali-linux-{{ imagebuilder:buildDate }}"
       }
     }
   }
@@ -349,10 +349,10 @@ resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_exporter_
   distribution {
     region = local.cfg.aws.region
     ami_distribution_configuration {
-      name        = "bah-kali-linux-exporter {{ imagebuilder:buildDate }}"
+      name        = "bah-kali-linux-exporter-{{ imagebuilder:buildDate }}"
       description = "BAH Kali Linux Exporter AMI"
       ami_tags = {
-        Name = "bah-kali-linux-exporter {{ imagebuilder:buildDate }}"
+        Name = "bah-kali-linux-exporter-{{ imagebuilder:buildDate }}"
       }
     }
   }
