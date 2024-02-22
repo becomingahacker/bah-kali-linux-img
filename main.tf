@@ -304,7 +304,7 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_exporter_recipe" {
 
     ebs {
       delete_on_termination = true
-      volume_size           = local.cfg.aws.disk_size * 2
+      volume_size           = local.cfg.aws.disk_size
       volume_type           = "gp2"
     }
   }
