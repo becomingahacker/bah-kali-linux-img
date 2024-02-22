@@ -113,7 +113,9 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_image_recipe" {
     ebs {
       delete_on_termination = true
       volume_size           = local.cfg.aws.disk_size
-      volume_type           = "gp2"
+      # TODO cmm - These can be expensive, be careful
+      volume_type = "io2"
+      iops        = 2000
     }
   }
 
@@ -149,7 +151,7 @@ resource "aws_imagebuilder_distribution_configuration" "bah_kali_linux_distribut
       name        = "bah-kali-linux-{{ imagebuilder:buildDate }}"
       description = "BAH Kali Linux AMI"
       ami_tags = {
-        Name    = "bah-kali-linux-{{ imagebuilder:buildDate }}"
+        Name = "bah-kali-linux-{{ imagebuilder:buildDate }}"
       }
     }
   }
@@ -248,6 +250,7 @@ resource "aws_imagebuilder_component" "bah_kali_linux_exporter" {
                 # 2024-02-20T00:44:58.141-05:00	Stdout: ├─nvme1n1p1 259:6 0 15.9G 0 part
                 # 2024-02-20T00:44:58.141-05:00	Stdout: ├─nvme1n1p14 259:7 0 3M 0 part
                 # 2024-02-20T00:44:58.141-05:00	Stdout: └─nvme1n1p15 259:8 0 124M 0 part
+                "fsck -f /dev/nvme1n1p1",
                 "qemu-img convert -p -f raw -O qcow2 /dev/nvme1n1 /root/${local.cfg.kali_linux_image_definition.disk_image}",
                 "PASS=\"$(aws secretsmanager get-secret-value --region ${local.cfg.aws.region} --secret-id ${local.cfg.secrets.app_password} | jq -r .SecretString)\"",
                 "TOKEN=\"$(curl -s -k -X 'POST' '${local.cfg.cml_controller_url}/api/v0/authenticate' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"username\": \"admin\", \"password\": \"'$PASS'\"}' | jq -r . )\"",
@@ -262,7 +265,7 @@ resource "aws_imagebuilder_component" "bah_kali_linux_exporter" {
             inputs = [
               {
                 path    = "/root/image_definition.json"
-                content =  jsonencode(local.cfg.kali_linux_image_definition)
+                content = jsonencode(local.cfg.kali_linux_image_definition)
               },
               {
                 path    = "/root/node_definition.json"
@@ -304,8 +307,9 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_exporter_recipe" {
 
     ebs {
       delete_on_termination = true
-      volume_size           = local.cfg.aws.disk_size
-      volume_type           = "gp2"
+      volume_size           = local.cfg.aws.disk_size * 2
+      volume_type           = "io2"
+      iops                  = 2000
     }
   }
 
@@ -315,8 +319,9 @@ resource "aws_imagebuilder_image_recipe" "bah_kali_linux_exporter_recipe" {
     ebs {
       delete_on_termination = true
       volume_size           = local.cfg.aws.disk_size
-      volume_type           = "gp2"
       snapshot_id           = aws_ebs_volume.bah_kali_linux_image_volume.snapshot_id
+      volume_type           = "io2"
+      iops                  = 2000
     }
   }
 

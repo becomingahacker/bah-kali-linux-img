@@ -12,5 +12,5 @@ data "external" "git_label" {
 # variable names to their values.
 output "git_label" {
   description = "value of the git label"
-  value = data.external.git_label.result
+  value       = data.external.git_label.result
 }

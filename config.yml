@@ -34,7 +34,7 @@ aws:
   instance_profile: CiscoModelingLabsBuild
 
   key_name: bootstrap_ssh
-  disk_size: 16
+  disk_size: 50
 
 secrets:
   app_password: sto/becomingahacker/secret/common/becomingahacker.com/prod/host/cml-0.becomingahacker.com/admin_password
@@ -46,13 +46,15 @@ kali_linux_build_commands:
   - export APT_OPTS DEBIAN_FRONTEND
   - locale-gen "en_US.UTF-8"
   - dpkg-reconfigure locales
+  # HACK cmm - don't update the kernel, because it currently breaks things
+  - echo "linux-image-cloud-amd64 hold" | dpkg --set-selections
+  - dpkg --get-selections
   - apt-get update
   - apt-get upgrade -y
-  # TODO cmm - What else do we need to install?
   # https://www.kali.org/docs/general-use/metapackages/
-  #- apt-get install -y kali-desktop-xfce kali-linux-default docker.io
-  - apt-get install -y kali-desktop-xfce docker.io
-  - curl -sSL https://websploit.org/install.sh | bash
+  - apt-get install -y kali-desktop-xfce kali-linux-default
+  # @santosomar materials
+  - curl -sSL https://websploit.org/install.sh | bash -x
 
 kali_linux_image_definition:
   id: kali-linux
@@ -61,6 +63,7 @@ kali_linux_image_definition:
   label: Kali Linux
   disk_image: kali-linux.qcow2
   read_only: false
+  boot_disk_size:
   ram:
   cpus:
   cpu_limit:
@@ -94,10 +97,10 @@ kali_linux_node_definition:
       libvirt_domain_driver: kvm
       driver: server
       disk_driver: virtio
-      ram: 4096
+      ram: 8192
       cpus: 2
       cpu_limit: 100
-      boot_disk_size: 32
+      boot_disk_size: 64
       nic_driver: virtio
       video:
         model: virtio
