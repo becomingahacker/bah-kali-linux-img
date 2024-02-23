@@ -44,15 +44,18 @@ kali_linux_build_commands:
   - APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"
   - DEBIAN_FRONTEND=noninteractive
   - export APT_OPTS DEBIAN_FRONTEND
-  - locale-gen "en_US.UTF-8"
+  - printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale
+  - apt install -y locales-all
+  - locale-gen --purge "en_US.UTF-8"
   - dpkg-reconfigure locales
   # HACK cmm - don't update the kernel, because it currently breaks things
   - echo "linux-image-cloud-amd64 hold" | dpkg --set-selections
   - dpkg --get-selections
   - apt-get update
   - apt-get upgrade -y
+  - apt-get install -y linux-image-amd64
   # https://www.kali.org/docs/general-use/metapackages/
-  - apt-get install -y kali-desktop-xfce kali-linux-default
+  - apt-get install -y kali-desktop-xfce kali-linux-default pciutils
   # @santosomar materials
   - curl -sSL https://websploit.org/install.sh | bash -x
 
