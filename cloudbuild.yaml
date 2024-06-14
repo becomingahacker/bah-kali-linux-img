@@ -29,5 +29,6 @@ steps:
 
 logsBucket: 'gs://bah-build-logs/bah-kali-linux-img'
 
-#options:
-#  logging: CLOUD_LOGGING_ONLY
+options:
+  logging: GCS_ONLY
+  logStreamingOption: STREAM_ON
