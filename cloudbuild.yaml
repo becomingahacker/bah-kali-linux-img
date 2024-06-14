@@ -18,6 +18,15 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=us-east1'
       - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - ls
+      - -laRF
+      - /
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-east1'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
+
 logsBucket: 'gs://bah-build-logs/bah-kali-linux-img'
 
 #options:
