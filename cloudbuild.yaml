@@ -33,11 +33,16 @@ steps:
       gcloud storage cp build/kali-linux.qcow2 gs://bah-machine-images/kali-linux/kali-linux.qcow2
 
       # Try connecting to CML
-      timeout 10s curl -k -v https://gcp.becomingahacker.com
+      timeout 10s curl -k -v ${CML_ENDPOINT}
+      #PASS="$(gcloud secrets versions access 1 --secret admin_password)"
+      #TOKEN="$(curl -s -k -X 'POST' ""${CML_ENDPOINT}/api/v0/authenticate"" -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"username\": \"admin\", \"password\": \"'$PASS'\"}' | jq -r . )\""
+      #curl -k -v -X 'POST' -H \"Authorization: Bearer $TOKEN\" -H 'Content-Type: application/json' --data-binary @/root/node_definition.json '${local.cfg.cml_controller_url}/api/v0/node_definitions'
+      #curl -k -v -X 'POST' -H \"Authorization: Bearer $TOKEN\" -H 'Content-Type: application/json' --data-binary @/root/image_definition.json '${local.cfg.cml_controller_url}/api/v0/image_definitions'
 
 
     env:
       - 'KALI_VERSION=2024.2'
+      - 'CML_ENDPOINT=https://gcp.becomingahacker.com'
       - 'PACKER_LOG=1'
       - 'CLOUDSDK_COMPUTE_REGION=us-east1'
       - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
