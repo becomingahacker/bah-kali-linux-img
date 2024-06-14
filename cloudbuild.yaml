@@ -6,8 +6,10 @@ steps:
       set -e
       set -x
 
-      curl -4 ip.me
-      timeout 10s curl -k -v https://gcp.becomingahacker.com
+      echo -n "My IP: "
+      curl -s -4 ip.me
+      PASS="$(gcloud secrets versions access 1 --secret admin_password)"
+      echo $PASS 
       exit 1
 
       APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"
