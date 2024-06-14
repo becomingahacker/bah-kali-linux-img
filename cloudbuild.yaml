@@ -2,14 +2,27 @@ steps:
   - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
     script: |
       #!/usr/bin/env bash
-      echo "Hello $_USER"
-      pwd
-      ls -l /dev
+
+      set -e
+      set -x
+
+      APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"
+      APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"
+      DEBIAN_FRONTEND=noninteractive
+      export APT_OPTS DEBIAN_FRONTEND
+      printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale
+
       mkdir -vp secrets
       ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "kali@kali"
-      bootcmd="echo $(cat secrets/id_ed25519.pub) >> /root/.ssh/authorized_keys"
-      sed -i 's/^  boot_command .*$/  boot_command = [ ${bootcmd} ]/' kali.pkr.hcl
+      bootcmd="echo $(cat secrets/id_ed25519.pub) >> /root/.ssh/authorized_keys<enter>"
+      sed -i 's/^  boot_command .*$/  boot_command = [ "$${bootcmd}" ]/' kali.pkr.hcl
+
       cat kali.pkr.hcl
+
+      curl -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
+      tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
+
+      packer init kali.pkr.hcl
       packer build kali.pkr.hcl
 
     env:
@@ -20,6 +33,8 @@ logsBucket: 'gs://bah-build-logs/bah-kali-linux-img'
 
 substitutions:
   _USER: "Google Cloud"
+  KALI_VERSION: "2024.2"
+
 
 options:
   automapSubstitutions: true
