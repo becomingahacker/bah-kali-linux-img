@@ -25,8 +25,8 @@ source "qemu" "kali-2024-2" {
   ssh_username         = "root"
   # ssh_password       = "toor"
   ssh_private_key_file = "secrets/id_ed25519"
-  boot_wait            = "60s"
-  boot_command = ["echo ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE8E/2sCEp3hvWiQxbqOwpTmoj1MxlUrxnVE5/tHnrXA kali@kali >> /root/.ssh/authorized_keys<enter>"]
+  boot_wait            = "90s"
+  boot_command         = []
   headless             = true
   #vnc_port_min        = 5901
   #vnc_port_max        = 5901

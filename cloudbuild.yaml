@@ -12,24 +12,19 @@ steps:
       export APT_OPTS DEBIAN_FRONTEND
       printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale
 
-
       mkdir -vp secrets
       ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "kali@kali" -N ""
       bootcmd="echo $(cat secrets/id_ed25519.pub) >> /root/.ssh/authorized_keys<enter>"
 
-      env
-
       sed -i 's%  boot_command .*$%  boot_command = \["'"${bootcmd}"'"]%' kali.pkr.hcl
 
-      cat kali.pkr.hcl
-
-      curl -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
+      curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
 
       packer init kali.pkr.hcl
       packer build kali.pkr.hcl
 
-      ls -laRF .
+      gcloud storage cp build/kali-linux.qcow2 gs://bah-machine-images/kali-linux/kali-linux.qcow2
 
     env:
       - 'KALI_VERSION=2024.2'
