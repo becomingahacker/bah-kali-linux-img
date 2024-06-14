@@ -32,3 +32,4 @@ logsBucket: 'gs://bah-build-logs/bah-kali-linux-img'
 options:
   logging: GCS_ONLY
   logStreamingOption: STREAM_ON
+
