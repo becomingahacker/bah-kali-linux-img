@@ -18,7 +18,7 @@ source "qemu" "kali-2024-2" {
   shutdown_command = "echo 'packer' | sudo -S shutdown -P now"
   disk_size        = "20000M"
   format           = "qcow2"
-  accelerator      = "kvm"
+  #accelerator      = "kvm"
   vm_name          = "kali-linux.qcow2"
   net_device       = "virtio-net"
   disk_interface   = "virtio"

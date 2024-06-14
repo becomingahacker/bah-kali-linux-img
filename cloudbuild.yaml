@@ -1,27 +1,17 @@
 steps:
-  - name: 'ubuntu'
-    args: ['echo', 'hello world'] 
-  
-  - name: 'ubuntu'
-    args:
-      - ls
-      - -l
-      - /workspace
-  - name: 'ubuntu'
+  - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
     script: |
       #!/usr/bin/env bash
       echo "Hello $_USER"
-  - name: 'ubuntu'
-    script: |
-      #!/usr/bin/env bash
-      echo "Your project ID is $PROJECT_ID"
+      pwd
+      ls -l /dev
+      mkdir -vp secrets
+      ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "kali@kali"
+      bootcmd="echo $(cat secrets/id_ed25519.pub) >> /root/.ssh/authorized_keys"
+      sed -i 's/^  boot_command .*$/  boot_command = [ ${bootcmd} ]/' kali.pkr.hcl
+      cat kali.pkr.hcl
+      packer build kali.pkr.hcl
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-    entrypoint: 'gcloud'
-    args:
-      - compute
-      - instances
-      - list
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-east1'
       - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
@@ -35,4 +25,3 @@ options:
   automapSubstitutions: true
   logging: GCS_ONLY
   logStreamingOption: STREAM_ON
-#
