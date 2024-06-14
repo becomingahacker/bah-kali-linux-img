@@ -7,7 +7,7 @@ steps:
       set -x
 
       curl -4 ip.me
-      curl -6 ip.me
+      timeout 10s curl -k -v https://gcp.becomingahacker.com
       exit 1
 
       APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"
@@ -25,10 +25,16 @@ steps:
       curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
 
+      # Build Kali Linux image with Packer
       packer init kali.pkr.hcl
       packer build kali.pkr.hcl
 
+      # Copy resultant image to GCS
       gcloud storage cp build/kali-linux.qcow2 gs://bah-machine-images/kali-linux/kali-linux.qcow2
+
+      # Try connecting to CML
+      timeout 10s curl -k -v https://gcp.becomingahacker.com
+
 
     env:
       - 'KALI_VERSION=2024.2'
