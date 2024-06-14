@@ -6,6 +6,10 @@ steps:
       set -e
       set -x
 
+      curl -4 ip.me
+      curl -6 ip.me
+      exit 1
+
       APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"
       APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"
       DEBIAN_FRONTEND=noninteractive
