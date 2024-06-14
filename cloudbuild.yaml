@@ -11,6 +11,7 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
+      - compute
       - instances
       - list
     env:
