@@ -8,7 +8,7 @@ packer {
 }
 
 locals {
-  ssh_public_key = file("${path.folder}/secrets/id_ed25519.pub")
+  ssh_public_key = file("${path.root}/secrets/id_ed25519.pub")
 }
 
 
@@ -19,7 +19,7 @@ source "qemu" "kali-linux" {
   disk_image           = true
   use_backing_file     = false
   output_directory     = "build"
-  shutdown_command     = "echo 'packer' | sudo -S shutdown -P now"
+  shutdown_command     = "echo 'Packer finished' | sudo -S shutdown -P now"
   disk_size            = "20000M"
   format               = "qcow2"
   #accelerator         = "kvm"
