@@ -7,9 +7,13 @@ packer {
   }
 }
 
+locals {
+  ssh_public_key = file("${path.folder}/secrets/id_ed25519.pub")
+}
 
-source "qemu" "kali-2024-2" {
-  # https://kali.download/cloud-images/kali-2024.2/kali-linux-2024.2-cloud-genericcloud-amd64.tar.xz
+
+source "qemu" "kali-linux" {
+  # e.g. https://kali.download/cloud-images/kali-2024.2/kali-linux-2024.2-cloud-genericcloud-amd64.tar.xz
   iso_url              = "disk.raw"
   iso_checksum         = "sha1:9413b8a86cae97d07416f66e46edbf7dc6ad7189"
   disk_image           = true
@@ -26,15 +30,18 @@ source "qemu" "kali-2024-2" {
   # ssh_password       = "toor"
   ssh_private_key_file = "secrets/id_ed25519"
   boot_wait            = "90s"
-  boot_command         = []
+  boot_command         = [
+    "echo ${locals.ssh_public_key} >> /root/.ssh/authorized_keys<enter>"
+  ]
   headless             = true
-  #vnc_port_min        = 5901
-  #vnc_port_max        = 5901
 }
 
 build {
   provisioner "shell" {
-    inline = ["dpkg -l"]
+    inline = [
+      "dpkg -l",
+      "truncate /root/.ssh/authorized_keys",
+    ]
   }
-  sources = ["source.qemu.kali-2024-2"]
+  sources = ["source.qemu.kali-linux"]
 }

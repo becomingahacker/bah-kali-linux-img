@@ -4,13 +4,10 @@ steps:
       #!/usr/bin/env bash
 
       set -e
-      set -x
+      #set -x
 
       echo -n "My IP: "
       curl -s -4 ip.me
-      PASS="$(gcloud secrets versions access 1 --secret admin_password)"
-      echo $PASS 
-      exit 1
 
       APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"
       APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"
@@ -18,11 +15,9 @@ steps:
       export APT_OPTS DEBIAN_FRONTEND
       printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale
 
+      # SSH key pair for Packer.  Will be removed after build.
       mkdir -vp secrets
       ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "kali@kali" -N ""
-      bootcmd="echo $(cat secrets/id_ed25519.pub) >> /root/.ssh/authorized_keys<enter>"
-
-      sed -i 's%  boot_command .*$%  boot_command = \["'"${bootcmd}"'"]%' kali.pkr.hcl
 
       curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
