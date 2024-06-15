@@ -18,9 +18,10 @@ source "qemu" "kali-linux" {
   disk_image           = true
   use_backing_file     = false
   output_directory     = "build"
-  shutdown_command     = "echo 'Packer finished' | sudo -S shutdown -P now"
+  shutdown_command     = "shutdown -P now"
   disk_size            = "16G"
   format               = "qcow2"
+  # Not available on Google Cloud Builder
   #accelerator         = "kvm"
   vm_name              = "kali-linux"
   net_device           = "virtio-net"
@@ -36,16 +37,30 @@ source "qemu" "kali-linux" {
 }
 
 build {
-  provisioner "shell-local" {
-    inline = [
-      "echo shell-local"
-    ]
-  }
-
   provisioner "shell" {
     inline = [
-      "dpkg -l",
-      "truncate --size=0 /root/.ssh/authorized_keys",
+      'set -x',
+      'APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew"',
+      'APT_OPTS+=" -o DPkg::Progress-Fancy=0 -o APT::Color=0"',
+      'DEBIAN_FRONTEND=noninteractive',
+      'export APT_OPTS DEBIAN_FRONTEND',
+      'printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale',
+      'apt install -y locales-all',
+      'locale-gen --purge "en_US.UTF-8"',
+      'dpkg-reconfigure locales',
+      # HACK cmm - don't update the kernel, because it currently breaks things,
+      # 'echo "linux-image-cloud-amd64 hold" | dpkg --set-selections',
+      'dpkg --get-selections',
+      'apt-get update',
+      'apt-get upgrade -y',
+      #'apt-get install -y linux-image-amd64',
+      # https://www.kali.org/docs/general-use/metapackages/
+      'apt-get install -y kali-desktop-xfce kali-linux-default pciutils',
+      'systemctl disable blueman-mechanism.service',
+      'dpkg-reconfigure xorg',
+      'dpkg -l',
+      'touch /root/.hushlogin',
+      'truncate --size=0 /root/.ssh/authorized_keys',
     ]
   }
   sources = ["source.qemu.kali-linux"]

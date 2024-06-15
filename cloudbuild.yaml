@@ -23,12 +23,13 @@ steps:
 
       # SSH key pair for Packer.  Will be removed after build.
       mkdir -vp secrets
-      ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "kali@kali" -N ""
+      ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "root@kali" -N ""
 
-      curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
-      tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       # TODO cmm - remove, lighten the load on kali.download
-      gcloud storage cp disk.raw gs://bah-machine-images/bah-foundations/kali-linux/disk.raw
+      #curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
+      #tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
+      gcloud storage cp gs://bah-machine-images/kali-linux/kali-linux-2024.2-cloud-genericcloud-amd64.tar.gz .
+      tar xzvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.gz
 
       # Build Kali Linux image with Packer
       packer init kali.pkr.hcl
