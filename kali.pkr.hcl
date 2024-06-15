@@ -19,7 +19,7 @@ source "qemu" "kali-linux" {
   use_backing_file     = false
   output_directory     = "build"
   shutdown_command     = "shutdown -P now"
-  disk_size            = "16G"
+  disk_size            = "50G"
   format               = "qcow2"
   # Not available on Google Cloud Builder
   #accelerator         = "kvm"
@@ -34,6 +34,8 @@ source "qemu" "kali-linux" {
     "echo ${local.ssh_public_key} >> /root/.ssh/authorized_keys<enter>"
   ]
   headless             = true
+  vnc_port_min         = 5901
+  vnc_port_max         = 5901
 }
 
 build {
@@ -43,11 +45,11 @@ build {
       "APT_OPTS=\"-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0\"",
       "DEBIAN_FRONTEND=noninteractive",
       "export APT_OPTS DEBIAN_FRONTEND",
-      "printf \"LANG=en_US.UTF-8\\nLC_ALL=en_US.UTF-8\\n\" > /etc/default/locale",
-      "cat /etc/default/locale",
       "dpkg --get-selections",
       "apt-get update",
       "apt-get upgrade -y",
+      "printf \"LANG=en_US.UTF-8\\nLC_ALL=en_US.UTF-8\\n\" > /etc/default/locale",
+      "cat /etc/default/locale",
       "apt-get install -y locales-all",
       "locale-gen --purge \"en_US.UTF-8\"",
       "dpkg-reconfigure locales",

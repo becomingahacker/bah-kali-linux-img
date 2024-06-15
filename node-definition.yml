@@ -11,14 +11,13 @@ device:
       - eth1
       - eth2
     serial_ports: 1
-    default_count: 1 
+    default_count: 1
 ui:
   visible: true
   label_prefix: kali-
   icon: host
   label: Kali Linux
   description: Kali Linux with Xfce Desktop Environment
-
 sim:
   linux_native:
     libvirt_domain_driver: kvm
@@ -30,10 +29,11 @@ sim:
     boot_disk_size: 64
     nic_driver: virtio
     video:
-      model: virtio
+      model: qxl
       memory: 16
 boot:
   timeout: 10
+  uses_regex: false
 inherited:
   image:
     ram: true
@@ -55,12 +55,12 @@ configuration:
     media_type: iso
     files:
       - name: meta-data
-        content: |
+        content: |-
           instance-id: kali
           local-hostname: kali
         editable: false
       - name: user-data
-        content: |
+        content: |-
           #cloud-config
           hostname: kali-default
           manage_etc_hosts: True
