@@ -23,7 +23,7 @@ source "qemu" "kali-linux" {
   disk_size            = "20000M"
   format               = "qcow2"
   #accelerator         = "kvm"
-  vm_name              = "kali-linux.qcow2"
+  vm_name              = "kali-linux"
   net_device           = "virtio-net"
   disk_interface       = "virtio"
   ssh_username         = "root"
@@ -31,7 +31,7 @@ source "qemu" "kali-linux" {
   ssh_private_key_file = "secrets/id_ed25519"
   boot_wait            = "90s"
   boot_command         = [
-    "echo ${locals.ssh_public_key} >> /root/.ssh/authorized_keys<enter>"
+    "echo ${local.ssh_public_key} >> /root/.ssh/authorized_keys<enter>"
   ]
   headless             = true
 }
