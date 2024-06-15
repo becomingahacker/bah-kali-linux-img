@@ -47,7 +47,7 @@ build {
       "printf \"LANG=en_US.UTF-8\\nLC_ALL=en_US.UTF-8\\n\" > /etc/default/locale",
       "cat /etc/default/locale",
       "apt install -y locales-all",
-      "locale-gen --purge "en_US.UTF-8"",
+      "locale-gen --purge \"en_US.UTF-8\"",
       "dpkg-reconfigure locales",
       # HACK cmm - don"t update the kernel, because it currently breaks things,
       # "echo "linux-image-cloud-amd64 hold" | dpkg --set-selections",
