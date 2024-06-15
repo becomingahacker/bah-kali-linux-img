@@ -40,8 +40,7 @@ build {
   provisioner "shell" {
     inline = [
       "set -x",
-      "APT_OPTS=\"-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew\"",
-      "APT_OPTS+=\" -o DPkg::Progress-Fancy=0 -o APT::Color=0\"",
+      "APT_OPTS=\"-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0\"",
       "DEBIAN_FRONTEND=noninteractive",
       "export APT_OPTS DEBIAN_FRONTEND",
       "printf \"LANG=en_US.UTF-8\\nLC_ALL=en_US.UTF-8\\n\" > /etc/default/locale",
