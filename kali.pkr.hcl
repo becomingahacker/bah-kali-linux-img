@@ -11,7 +11,6 @@ locals {
   ssh_public_key = file("${path.root}/secrets/id_ed25519.pub")
 }
 
-
 source "qemu" "kali-linux" {
   # e.g. https://kali.download/cloud-images/kali-2024.2/kali-linux-2024.2-cloud-genericcloud-amd64.tar.xz
   iso_url              = "disk.raw"
@@ -20,7 +19,7 @@ source "qemu" "kali-linux" {
   use_backing_file     = false
   output_directory     = "build"
   shutdown_command     = "echo 'Packer finished' | sudo -S shutdown -P now"
-  disk_size            = "20000M"
+  disk_size            = "16G"
   format               = "qcow2"
   #accelerator         = "kvm"
   vm_name              = "kali-linux"
@@ -37,10 +36,16 @@ source "qemu" "kali-linux" {
 }
 
 build {
+  provisioner "shell-local" {
+    inline = [
+      "echo shell-local"
+    ]
+  }
+
   provisioner "shell" {
     inline = [
       "dpkg -l",
-      "truncate /root/.ssh/authorized_keys",
+      "truncate --size=0 /root/.ssh/authorized_keys",
     ]
   }
   sources = ["source.qemu.kali-linux"]
