@@ -63,7 +63,7 @@ source "googlecompute" "kali-linux-cloud-cml-amd64" {
   image_name              = "kali-linux-{{timestamp}}-cloud-cml-amd64"
 
   zone                    = var.zone
-  machine_type            = "n2-standard-4"
+  machine_type            = "n2-highcpu-8"
 
   disk_size               = 48
   disk_type               = "pd-ssd"

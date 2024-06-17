@@ -72,4 +72,3 @@ serviceAccount: 'projects/gcp-asigbahgcp-nprd-47930/serviceAccounts/build-bah-ka
 options:
   logging: GCS_ONLY
   logStreamingOption: STREAM_ON
-  machineType: 'E2_HIGHCPU_8'
