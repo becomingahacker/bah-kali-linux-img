@@ -15,6 +15,8 @@ steps:
       set -e
       #set -x
 
+      env
+
       echo "Locale settings:"
       cat /etc/default/locale
 
@@ -30,6 +32,7 @@ steps:
 
       # Build Kali Linux image with Packer
       packer init kali-gce.pkr.hcl
+      packer validate -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" kali-gce.pkr.hcl
       packer build -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" kali-gce.pkr.hcl
 
       # TODO cmm - Try connecting to CML
@@ -41,6 +44,7 @@ steps:
       #curl -k -v -X 'POST' -H \"Authorization: Bearer $TOKEN\" -H 'Content-Type: application/json' --data-binary @/root/image_definition.json '${local.cfg.cml_controller_url}/api/v0/image_definitions'
 
 logsBucket: 'gs://bah-build-logs/bah-kali-linux-img'
+serviceAccount: 'projects/gcp-asigbahgcp-nprd-47930/serviceAccounts/build-bah-kali-linux-img@gcp-asigbahgcp-nprd-47930.iam.gserviceaccount.com'
 
 options:
   logging: GCS_ONLY
