@@ -1,5 +1,7 @@
 
+# gcloud auth configure-docker us-east1-docker.pkg.dev
 # docker build . -t us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img
+# docker push us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img
 
 # Based off Debian Bookworm
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:slim
