@@ -7,8 +7,10 @@ steps:
       - 'DEBIAN_FRONTEND=noninteractive'
       - 'TZ=Etc/UTC'
       - 'PACKER_LOG=1'
-      - 'CLOUDSDK_COMPUTE_REGION=us-east1'
-      - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
+      - 'LOCATION=$LOCATION'
+      - 'PROJECT_ID=$PROJECT_ID'
+      - 'ZONE=$LOCATION-b'
+      - 'SERVICE_ACCOUNT_EMAIL=$SERVICE_ACCOUNT_EMAIL'
     script: |
       #!/usr/bin/env bash
 
@@ -24,7 +26,7 @@ steps:
       mkdir -vp secrets
       ssh-keygen -t ed25519 -f secrets/id_ed25519 -C "root@kali" -N ""
 
-      # TODO cmm - remove, lighten the load on kali.download
+      # TODO cmm - remove, was lighten the load on kali.download
       #curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       #tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       #gcloud storage cp gs://bah-machine-images/kali-linux/kali-linux-2024.2-cloud-genericcloud-amd64.tar.gz .
@@ -32,8 +34,18 @@ steps:
 
       # Build Kali Linux image with Packer
       packer init kali-gce.pkr.hcl
-      packer validate -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" kali-gce.pkr.hcl
-      packer build -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" kali-gce.pkr.hcl
+      packer validate \
+        -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" \
+        -var "zone=$ZONE" \
+        -var "project_id=$PROJECT_ID" \
+        kali-gce.pkr.hcl
+      packer build \
+        -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" \
+        -var "zone=$ZONE" \
+        -var "project_id=$PROJECT_ID" \
+        kali-gce.pkr.hcl
+
+      jq . manifest.json
 
       # TODO cmm - Try connecting to CML
       #timeout 10s curl -k -v ${CML_ENDPOINT}

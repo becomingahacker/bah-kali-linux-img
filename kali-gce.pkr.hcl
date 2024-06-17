@@ -7,10 +7,21 @@ packer {
   }
 }
 
-# variables.pkr.hcl
+variable "project_id" {
+    type        = string
+    default     = ""
+    description = "Project ID, e.g. gcp-asigbahgcp-nprd-47930"
+}
+
+variable "zone" {
+    type        = string
+    default     = ""
+    description = "Zone, e.g. us-east1-b."
+}
+
 variable "service_account_email" {
     type        = string
-    default     = "cisco-modeling-labs@gcp-asigbahgcp-nprd-47930.iam.gserviceaccount.com"
+    default     = ""
     description = "Service account to use while building."
 }
 
@@ -31,7 +42,7 @@ locals {
 }
 
 source "googlecompute" "kali-linux-cloud-cml-amd64" {
-  project_id              = "gcp-asigbahgcp-nprd-47930"
+  project_id              = var.project_id
   # Pristine image from base GCE image family
   source_image_family     = "kali-linux-cloud-gce-amd64"
   # For tweaks to existing image we've already built
@@ -39,7 +50,7 @@ source "googlecompute" "kali-linux-cloud-cml-amd64" {
   image_family            = "kali-linux-cloud-cml-amd64"
   image_name              = "kali-linux-{{timestamp}}-cloud-cml-amd64"
 
-  zone                    = "us-east1-b"
+  zone                    = var.zone
   machine_type            = "n2-standard-4"
 
   disk_size               = 48
