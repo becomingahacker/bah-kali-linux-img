@@ -31,6 +31,7 @@ sim:
     video:
       model: qxl
       memory: 16
+    efi_boot: false
 boot:
   timeout: 10
   uses_regex: false
@@ -63,15 +64,17 @@ configuration:
         content: |-
           #cloud-config
           hostname: kali-default
-          manage_etc_hosts: True
-          system_info:
-            default_user:
-              name: cisco
-          password: cisco
-          chpasswd: { expire: False }
-          ssh_pwauth: True
-          #ssh_authorized_keys:
-          #   - your-ssh-pubkey-line-goes-here
+          manage_etc_hosts: true
+
+          users:
+            - default
+            - name: cisco
+              gecos: Cisco
+              groups: users, adm, sudo
+              plain_text_passwd: cisco
+              lock_passwd: false
+              shell: /bin/bash
+
           runcmd:
             - dpkg-reconfigure xorg
         editable: true
