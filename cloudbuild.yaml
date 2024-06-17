@@ -3,7 +3,7 @@ steps:
     env:
       - 'KALI_VERSION=2024.2'
       - 'CML_ENDPOINT=https://gcp.becomingahacker.com'
-      - 'GS_PATH=gs://bah-machine-images/kali-linux'
+      - 'GS_IMAGE_PATH=gs://bah-machine-images/kali-linux'
       # Pristine
       #- 'SOURCE_IMAGE_FAMILY=kali-linux-cloud-gce-amd64'
       # Tweaks
@@ -65,10 +65,12 @@ steps:
 
       gcloud compute images export \
         --compute-service-account $SERVICE_ACCOUNT_EMAIL \
+        --cloudbuild-service-account $SERVICE_ACCOUNT_EMAIL \
         --zone $ZONE \
         --image $IMAGE \
+        --log-location ${GS_IMAGE_PATH} \
         --export-format qcow2 \
-        --destination-uri ${GS_PATH}/${IMAGE}.qcow2
+        --destination-uri ${GS_IMAGE_PATH}/${IMAGE}.qcow2
 
 logsBucket: 'gs://bah-build-logs/bah-kali-linux-img'
 serviceAccount: 'projects/gcp-asigbahgcp-nprd-47930/serviceAccounts/build-bah-kali-linux-img@gcp-asigbahgcp-nprd-47930.iam.gserviceaccount.com'
