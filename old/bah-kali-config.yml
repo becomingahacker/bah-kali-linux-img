@@ -1,0 +1,433 @@
+#cloud-config
+# vim: syntax=yaml
+# http://yaml-online-parser.appspot.com/
+# http://www.yaml.org/refcard.html
+---
+apt_preserve_sources_list: false
+apt_mirror: http://192.168.4.252/kali
+apt_mirror_search_dns: false
+
+# For root & debian account
+ssh_authorized_keys: []
+
+users:
+  - default    # debian
+
+write_files:
+  # ClipIt history saving
+  - content: |
+      [rc]
+      use_copy=true
+      use_primary=false
+      synchronize=false
+      automatic_paste=false
+      show_indexes=false
+      save_uris=true
+      use_rmb_menu=false
+      save_history=false
+      history_limit=50
+      items_menu=20
+      statics_show=true
+      statics_items=10
+      hyperlinks_only=false
+      confirm_clear=false
+      single_line=true
+      reverse_history=false
+      item_length=50
+      ellipsize=2
+      history_key=<Ctrl><Alt>H
+      actions_key=<Ctrl><Alt>A
+      menu_key=<Ctrl><Alt>P
+      search_key=<Ctrl><Alt>F
+      offline_key=<Ctrl><Alt>O
+      offline_mode=false
+    path: /root/.config/clipit/clipitrc
+    permissions: '0644'
+    owner: root:root
+
+  # Desktop background
+  - content: |
+      [*]
+      wallpaper_mode=color
+      wallpaper_common=1
+      wallpaper=/etc/alternatives/desktop-background
+      desktop_bg=#181b3d
+      desktop_fg=#ffffff
+      desktop_shadow=#000000
+      desktop_font=Sans 12
+      show_wm_menu=0
+      sort=mtime;ascending;
+      show_documents=0
+      show_trash=1
+      show_mounts=0
+    path: /root/.config/pcmanfm/LXDE/desktop-items-0.conf
+    permissions: '0644'
+    owner: root:root
+
+  # Autologin (not working yet)
+  - content: |
+      [SeatDefaults]
+      autologin-user=root
+      autologin-user-timeout=0
+      user-session=LXDE
+      greeter-session=lightdm-greeter
+    path: /etc/lightdm/lightdm.conf
+    permissions: '0644'
+    owner: root:root
+
+  # VNC Server for X11
+  - content: |
+      [Unit]
+      Description=VNC Server for X11
+      Requires=display-manager.service
+      After=display-manager.service
+    
+      [Service]
+      Type=simple
+      ExecStart=/usr/bin/x11vnc -norc -forever -shared -6 -passwd seccon! -xrandr -xkb -display :0 -auth /var/run/lightdm/root/:0 -o /var/log/x11vnc.log
+      Restart=always
+    
+      [Install]
+      WantedBy=graphical.target
+    path: /etc/systemd/system/x11vnc.service
+    permissions: '0644'
+    owner: root:root
+
+  # Resize Desktop to 1152x768
+  - content: |
+      [Desktop Entry]
+      Type=Application
+      Name=LXRandR autostart
+      Comment=Start xrandr with settings done in LXRandR
+      Exec=sh -c 'xrandr --output Virtual-0 --mode 1152x768'
+      OnlyShowIn=LXDE
+    path: /root/.config/autostart/lxrandr-autostart.desktop
+    permissions: '0644'
+    owner: root:root
+
+  # Panel shortcuts
+  - content: |
+      # lxpanel <profile> config file. Manually editing is not recommended.
+      # Use preference dialog in lxpanel to adjust config when you can.
+      
+      Global {
+        edge=bottom
+        allign=left
+        margin=0
+        widthtype=percent
+        width=100
+        height=26
+        transparent=0
+        tintcolor=#000000
+        alpha=0
+        setdocktype=1
+        setpartialstrut=1
+        usefontcolor=1
+        fontcolor=#ffffff
+        background=1
+        backgroundfile=/usr/share/lxpanel/images/background.png
+      }
+      Plugin {
+        type=space
+        Config {
+          Size=2
+        }
+      }
+      Plugin {
+        type=menu
+        Config {
+          image=/usr/share/lxde/images/lxde-icon.png
+          system {
+          }
+          separator {
+          }
+          item {
+            command=run
+          }
+          separator {
+          }
+          item {
+            image=gnome-logout
+            command=logout
+          }
+        }
+      }
+      Plugin {
+        type=launchbar
+        Config {
+          Button {
+            id=menu://applications/Usual Applications/Accessories/leafpad.desktop
+          }
+          Button {
+            id=menu-xdg-X-Debian-Applications-Terminal-Emulators-x-terminal_as_root_(gksu).desktop
+          }
+          Button {
+            id=menu://applications/Usual Applications/Internet/firefox-esr.desktop
+          }
+          Button {
+            id=menu://applications/Usual Applications/Internet/wireshark.desktop
+          }
+          Button {
+            id=menu://applications/Usual Applications/Internet/bah-rdesktop.desktop
+          }
+        }
+      }
+      Plugin {
+        type=space
+        Config {
+          Size=4
+        }
+      }
+      Plugin {
+        type=wincmd
+        Config {
+          Button1=iconify
+          Button2=shade
+        }
+      }
+      Plugin {
+        type=space
+        Config {
+          Size=4
+        }
+      }
+      Plugin {
+        type=pager
+        Config {
+        }
+      }
+      Plugin {
+        type=space
+        Config {
+          Size=4
+        }
+      }
+      Plugin {
+        type=taskbar
+        expand=1
+        Config {
+          tooltips=1
+          IconsOnly=0
+          AcceptSkipPager=1
+          ShowIconified=1
+          ShowMapped=1
+          ShowAllDesks=0
+          UseMouseWheel=1
+          UseUrgencyHint=1
+          FlatButton=0
+          MaxTaskWidth=150
+          spacing=1
+        }
+      }
+      Plugin {
+        type=cpu
+        Config {
+        }
+      }
+      Plugin {
+        type=tray
+        Config {
+        }
+      }
+      Plugin {
+        type=dclock
+        Config {
+          ClockFmt=%R
+          TooltipFmt=%A %x
+          BoldFont=0
+          IconOnly=0
+          CenterText=0
+        }
+      }
+      Plugin {
+        type=launchbar
+        Config {
+          Button {
+            id=lxde-screenlock.desktop
+          }
+          Button {
+            id=lxde-logout.desktop
+          }
+        }
+      }
+    path: /root/.config/lxpanel/LXDE/panels/panel
+    permissions: '0644'
+    owner: root:root
+
+  # JBoss shortcut
+  - content: |
+      #!/bin/bash
+      JAVA_HOME=/root/labs/web-apps/jre1.6.0_45 /root/labs/web-apps/jboss-5.1.0.GA/bin/run.sh
+    path: /root/labs/web-apps/run-jboss.sh
+    permissions: '0555'
+    owner: root:root
+
+  # LXTerminal Settings
+  - content: |
+      [general]
+      fontname=Monospace 14
+      selchars=-A-Za-z0-9,./?%&#:_
+      scrollback=1000
+      bgcolor=#000000000000
+      bgalpha=65535
+      fgcolor=#aaaaaaaaaaaa
+      disallowbold=false
+      cursorblinks=false
+      cursorunderline=false
+      audiblebell=false
+      tabpos=top
+      hidescrollbar=false
+      hidemenubar=false
+      hideclosebutton=false
+      hidepointer=false
+      disablef10=false
+      disablealt=false
+
+      [shortcut]
+      new_window_accel=<CTRL><SHIFT>N
+      new_tab_accel=<CTRL><SHIFT>T
+      close_tab_accel=<CTRL><SHIFT>W
+      close_window_accel=<CTRL><SHIFT>Q
+      copy_accel=<CTRL><SHIFT>C
+      paste_accel=<CTRL><SHIFT>V
+      name_tab_accel=<CTRL><SHIFT>I
+      previous_tab_accel=<CTRL>Page_Up
+      next_tab_accel=<CTRL>Page_Down
+      move_tab_left_accel=<CTRL><SHIFT>Page_Up
+      move_tab_right_accel=<CTRL><SHIFT>Page_Down
+    path: /root/.config/lxterminal/lxterminal.conf
+    permissions: '0644'
+    owner: root:root
+
+  # Shortcut for Remote Desktop
+  - content: |
+      [Desktop Entry]
+      Name=BAH Remote Desktop
+      Comment=Becoming a Hacker - connect to windows machine with remote desktop
+      Exec=rdesktop -u seccon -p seccon! windows
+      Icon=/usr/share/icons/hicolor/24x24/apps/windows-icon-24x24.png
+      Terminal=false
+      Type=Application
+      StartupNotify=false
+      Categories=Network;RemoteAccess;
+    path: /usr/share/applications/bah-rdesktop.desktop
+    permissions: '0644'
+    owner: root:root
+
+  # Set mouse cursor 
+  - content: |
+      [Session]
+      window_manager=openbox-lxde
+      disable_autostart=no
+      polkit/command=lxpolkit
+      clipboard/command=lxclipboard
+      xsettings_manager/command=build-in
+      proxy_manager/command=build-in
+      keyring/command=ssh-agent
+      quit_manager/command=lxsession-logout
+      lock_manager/command=lxlock
+      terminal_manager/command=lxterminal
+
+      [GTK]
+      sNet/ThemeName=Clearlooks
+      sNet/IconThemeName=nuoveXT2
+      sGtk/FontName=Sans 10
+      iGtk/ToolbarStyle=3
+      iGtk/ButtonImages=1
+      iGtk/MenuImages=1
+      iGtk/CursorThemeSize=18
+      iXft/Antialias=1
+      iXft/Hinting=1
+      sXft/HintStyle=hintslight
+      sXft/RGBA=rgb
+      iNet/EnableEventSounds=1
+      iNet/EnableInputFeedbackSounds=1
+      sGtk/ColorScheme=
+      iGtk/ToolbarIconSize=3
+      sGtk/CursorThemeName=Adwaita
+
+      [Mouse]
+      AccFactor=20
+      AccThreshold=10
+      LeftHanded=0
+
+      [Keyboard]
+      Delay=500
+      Interval=30
+      Beep=1
+
+      [State]
+      guess_default=true
+
+      [Dbus]
+      lxde=true
+
+      [Environment]
+      menu_prefix=lxde-
+    path: /root/.config/lxsession/LXDE/desktop.conf
+    permissions: '0644'
+    owner: root:root
+
+bootcmd:
+  # from bootstrap-vz for troubleshooting
+  - cloud-init-per once rm_test_file rm /root/test_file
+  - cloud-init-per once copy_labs wget -q -O /tmp/bah-labs.tar.gz 'http://192.168.4.252/bah/labs/bah-labs.tar.gz'
+  - cloud-init-per once copy_seccon_wordlist wget -q -O /usr/share/wordlists/seccon.txt 'http://192.168.4.252/bah/labs/seccon.txt'
+  - cloud-init-per once copy_wifisim wget -q -O /tmp/wifisim-v1.0.tar.gz 'http://192.168.4.252/bah/wifisim/wifisim-v1.0.tar.gz'
+  - cloud-init-per once copy_mozilla_configs wget -q -O /tmp/mozilla-configs.tar.gz 'http://192.168.4.252/bah/mozilla/mozilla-configs.tar.gz'
+  - cloud-init-per once copy_old_jre wget -q -O /root/labs/web-apps/jre1.6.0_45.tar.gz 'http://192.168.4.252/bah/labs/jre1.6.0_45.tar.gz'
+  - cloud-init-per once copy_windows_icon wget -O /usr/share/icons/hicolor/24x24/apps/windows-icon-24x24.png 'http://192.168.4.252/bah/icons/windows-icon-24x24.png'
+  # Nice colorful prompts and directory listings
+  - cloud-init-per once cp_root_skel cp -p /etc/skel/.* /root
+  - cloud-init-per once touch_configured_bootcmd touch /.configured.bootcmd
+
+runcmd:
+  #- apt-get update
+  # labs
+  - cloud-init-per once unpack_labs tar xvf /tmp/bah-labs.tar.gz -C /root
+  - cloud-init-per once chown_labs chown -R 'root:root' /root/labs
+  # Fix softlinks in labs for kali
+  - cloud-init-per once mkdir_overflows mkdir -vp /root/labs/overflows
+  - cloud-init-per once link1 ln -sf /usr/share/metasploit-framework/tools/exploit/pattern_create.rb /root/labs/overflows/pattern_create.rb
+  - cloud-init-per once link2 ln -sf /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb /root/labs/overflows/pattern_offset.rb
+  # wifisim
+  #- cloud-init-per once install_hostapd apt-get install -y hostapd
+  - cloud-init-per once unpack_wifisim tar xvf /tmp/wifisim-v1.0.tar.gz -C /opt
+  - cloud-init-per once chown_wifisim chown -R 'root:root' /opt/wifisim
+  - cloud-init-per once cp_wifisimd cp /opt/wifisim/wifisimd /etc/init.d
+  - cloud-init-per once chown_wifisimd chown -R 'root:root' /opt/wifisim
+  - cloud-init-per once chown_init_wifisimd chown -R 'root:root' /etc/init.d/wifisimd
+  - cloud-init-per once enable_wifisimd systemctl enable wifisimd.service
+  # Allow Wireshark to run without being root
+  - cloud-init-per once dumpcap_caps setcap cap_net_raw+ep /usr/bin/dumpcap
+  # VNC
+  #- cloud-init-per once install_x11vnc apt-get install -y x11vnc
+  - cloud-init-per once enable_x11vnc systemctl enable x11vnc.service
+  #- cloud-init-per once install_dig_build apt-get install -y dnsutils build-essential
+  - cloud-init-per once atftpd_use_inetd_false sed -i 's/USE_INETD=true/USE_INETD=false/' /etc/default/atftpd
+  - cloud-init-per once enable_atftpd systemctl enable atftpd.service
+  - cloud-init-per once copy_old_jre_harder wget -q -O /root/labs/web-apps/jre1.6.0_45.tar.gz 'http://192.168.4.252/bah/labs/jre1.6.0_45.tar.gz'
+  - cloud-init-per once unpack_old_jre tar xzvf /root/labs/web-apps/jre1.6.0_45.tar.gz -C /root/labs/web-apps 
+  #- cloud-init-per once rm_old_jre rm /root/labs/web-apps/jre1.6.0_45.tar.gz
+  - cloud-init-per once unpack_old_jboss unzip /root/labs/web-apps/jboss-5.1.0.GA.zip -d /root/labs/web-apps
+  #- cloud-init-per once rm_old_jboss rm /root/labs/web-apps/jboss-5.1.0.GA.zip
+  - cloud-init-per once unpack_mozilla_configs tar xzvf /tmp/mozilla-configs.tar.gz -C /root
+  - cloud-init-per once rm_mozilla_configs rm /tmp/mozilla-configs.tar.gz
+  # Set timezone
+  - cloud-init-per once link_timezone ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime
+  - cloud-init-per once set_timezone echo -n 'Europe/London' > /etc/timezone
+  #- cloud-init-per once link_timezone ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+  #- cloud-init-per once set_timezone echo -n 'America/New_York' > /etc/timezone
+  #- cloud-init-per once download_x11vnc_patch wget -O /tmp/x11vnc_0.9.13-2.0_amd64.deb http://192.168.4.252/bah/patches/x11vnc_0.9.13-2.0_amd64.deb
+  #- cloud-init-per once download_x11vncdata_patch wget -O /tmp/x11vnc-data_0.9.13-2.0_all.deb http://192.168.4.252/bah/patches/x11vnc-data_0.9.13-2.0_all.deb
+  #- cloud-init-per once install_x11vnc_patch dpkg -i /tmp/x11vnc-data_0.9.13-2.0_all.deb /tmp/x11vnc_0.9.13-2.0_amd64.deb
+  - cloud-init-per once touch_configured_runcmd touch /.configured.runcmd
+
+# No ordering for any of this stuff, so we'll reboot after configuring
+power_state:
+ mode: reboot
+ delay: "now"
+ timeout: 40
+ condition: True
+...
+
