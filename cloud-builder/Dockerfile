@@ -10,7 +10,7 @@ RUN printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC && \
     apt-get -y update && \
     apt-get -y upgrade && \
-    apt-get -y install unzip xz-utils qemu-system-x86 libguestfs-tools && \
+    apt-get -y install unzip xz-utils libguestfs-tools jq && \
     gcloud components list && \
     mkdir -vp /tmp/packer && \
     curl -o /tmp/packer/packer_${PACKER_VERSION}_linux_amd64.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip && \
