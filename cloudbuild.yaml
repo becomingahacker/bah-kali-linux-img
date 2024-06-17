@@ -64,6 +64,7 @@ steps:
       IMAGE=$(jq -r .builds[0].artifact_id manifest.json)
 
       gcloud compute images export \
+        --compute-service-account $SERVICE_ACCOUNT_EMAIL \
         --image $IMAGE \
         --export-format qcow2 \
         --destination-uri ${GS_PATH}/${IMAGE}.qcow2
