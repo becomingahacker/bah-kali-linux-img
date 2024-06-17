@@ -25,6 +25,18 @@ variable "service_account_email" {
     description = "Service account to use while building."
 }
 
+variable "source_image_family" {
+    type        = string
+    default     = "kali-linux-cloud-gce-amd64"
+    description = "Parent image family, e.g. kali-linux-cloud-gce-amd64"
+}
+
+variable "provision_script" {
+    type        = string
+    default     = "setup.sh"
+    description = "Provisioning script"
+}
+
 locals {
   ssh_public_key          = file("${path.root}/secrets/id_ed25519.pub")
 
@@ -44,7 +56,7 @@ locals {
 source "googlecompute" "kali-linux-cloud-cml-amd64" {
   project_id              = var.project_id
   # Pristine image from base GCE image family
-  source_image_family     = "kali-linux-cloud-gce-amd64"
+  source_image_family     = var.source_image_family
   # For tweaks to existing image we've already built
   #source_image_family     = "kali-linux-cloud-cml-amd64"
   image_family            = "kali-linux-cloud-cml-amd64"
