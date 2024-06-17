@@ -10,7 +10,7 @@ device:
       - eth0
       - eth1
       - eth2
-    serial_ports: 1
+    serial_ports: 2
     default_count: 1
 ui:
   visible: true
@@ -72,5 +72,7 @@ configuration:
           ssh_pwauth: True
           #ssh_authorized_keys:
           #   - your-ssh-pubkey-line-goes-here
+          runcmd:
+            - dpkg-reconfigure xorg
         editable: true
 schema_version: 0.0.1
