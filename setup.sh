@@ -25,7 +25,7 @@ timedatectl set-timezone America/New_York
 # https://www.kali.org/docs/general-use/metapackages/
 # Not including google-guest-agent on purpose
 # Ignore errors; we will fix in the tweak cycle
-apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw usbutils || true
+apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw usbutils beef-xss mtr || true
 
 # Disable Bluetooth
 systemctl disable blueman-mechanism.service
