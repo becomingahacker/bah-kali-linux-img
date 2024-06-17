@@ -95,12 +95,14 @@ build {
   post-processor "googlecompute-export" {
     # TODO cmm - Disabled, as exporting is way too slow.  It mounts the disk as
     # a standard persistent disk, then exports it.
-    # I'll just create a disk by hand and import it directly to the controller.
+    # I'll just create an SSD disk by hand and import it directly from the controller.
+    # Example:
     # root@cml-controller:/mnt/kali# qemu-img convert -O qcow2 -f raw /dev/sdc kali-linux-1718585372-cloud-cml-amd64.qcow2
     # root@cml-controller:/mnt/kali# ls -l kali-linux-1718585372-cloud-cml-amd64.qcow2 
     # -rw-r--r-- 1 root root 15592325120 Jun 17 01:19 kali-linux-1718585372-cloud-cml-amd64.qcow2
     # root@cml-controller:/mnt/kali# mv kali-linux-1718585372-cloud-cml-amd64.qcow2 /var/local/virl2/dropfolder/
-    only           = [ ]
+
+    only = [ ]
     # only = [ "googlecompute.kali-linux-cloud-cml-amd64" ]
 
     service_account_email = var.service_account_email
