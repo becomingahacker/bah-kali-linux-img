@@ -100,27 +100,6 @@ build {
     ]
   }
 
-  # TODO cmm - Disabled, as exporting is way too slow.  It mounts the disk as
-  # a standard persistent disk, then exports it.
-  # I'll just create an SSD disk by hand and import it directly from the controller.
-  # Example:
-  # root@cml-controller:/mnt/kali# qemu-img convert -O qcow2 -f raw /dev/sdc \
-  #   /var/local/virl2/dropfolder/kali-linux-1718585372-cloud-cml-amd64.qcow2 
-  ## Export to Google Cloud Storage
-  #post-processor "googlecompute-export" {
-
-  #  only = [ "googlecompute.kali-linux-cloud-cml-amd64" ]
-
-  #  service_account_email = var.service_account_email
-
-  #  paths = [
-  #    "gs://bah-machine-images/kali-linux/kali-linux-{{timestamp}}-cloud-cml-amd64.tar.gz",
-  #  ]
-
-  #  # TODO cmm - This can be set to false when tweaking is complete
-  #  keep_input_artifact = true
-  #}
-
   post-processor "manifest" {
     only           = [
       "googlecompute.kali-linux-cloud-cml-amd64",
