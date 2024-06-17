@@ -65,6 +65,7 @@ steps:
 
       gcloud compute images export \
         --compute-service-account $SERVICE_ACCOUNT_EMAIL \
+        --zone $ZONE \
         --image $IMAGE \
         --export-format qcow2 \
         --destination-uri ${GS_PATH}/${IMAGE}.qcow2
