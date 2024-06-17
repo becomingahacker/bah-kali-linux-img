@@ -50,7 +50,7 @@ source "googlecompute" "kali-linux-cloud-cml-amd64" {
 
   ssh_username            = "root"
   ssh_private_key_file    = "secrets/id_ed25519"
-  service_account_email   = local.service_account_email
+  service_account_email   = var.service_account_email
 
   scopes = [
     "https://www.googleapis.com/auth/cloud-platform",
