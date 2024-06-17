@@ -92,10 +92,7 @@ build {
       "googlecompute.kali-linux-cloud-cml-amd64",
     ]
 
-    # Pristine
-    script = "setup.sh"
-    # Tweaks
-    #script = "tweaks.sh"
+    script = var.provision_script
 
     environment_vars = [
       "APT_OPTS=\"-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0\"",
