@@ -15,9 +15,6 @@ steps:
       set -e
       #set -x
 
-      echo -n "My IP: "
-      curl -s -4 ip.me
-
       echo "Locale settings:"
       cat /etc/default/locale
 
@@ -28,20 +25,17 @@ steps:
       # TODO cmm - remove, lighten the load on kali.download
       #curl -s -o kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz https://kali.download/cloud-images/kali-${KALI_VERSION}/kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
       #tar xJvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.xz
-      gcloud storage cp gs://bah-machine-images/kali-linux/kali-linux-2024.2-cloud-genericcloud-amd64.tar.gz .
-      tar xzvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.gz
+      #gcloud storage cp gs://bah-machine-images/kali-linux/kali-linux-2024.2-cloud-genericcloud-amd64.tar.gz .
+      #tar xzvf kali-linux-${KALI_VERSION}-cloud-genericcloud-amd64.tar.gz
 
       # Build Kali Linux image with Packer
-      packer init kali.pkr.hcl
-      packer build kali.pkr.hcl
+      packer init kali-gce.pkr.hcl
+      packer build -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" kali-gce.pkr.hcl
 
-      # Copy resultant image to GCS
-      gcloud storage cp build/kali-linux.qcow2 gs://bah-machine-images/bah-foundations/kali-linux/kali-linux.qcow2
-
-      # Try connecting to CML
-      timeout 10s curl -k -v ${CML_ENDPOINT}
-      PASS="$(gcloud secrets versions access 1 --secret admin_password)"
-      echo $PASS 
+      # TODO cmm - Try connecting to CML
+      #timeout 10s curl -k -v ${CML_ENDPOINT}
+      #PASS="$(gcloud secrets versions access 1 --secret admin_password)"
+      #echo $PASS 
       #TOKEN="$(curl -s -k -X 'POST' ""${CML_ENDPOINT}/api/v0/authenticate"" -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"username\": \"admin\", \"password\": \"'$PASS'\"}' | jq -r . )\""
       #curl -k -v -X 'POST' -H \"Authorization: Bearer $TOKEN\" -H 'Content-Type: application/json' --data-binary @/root/node_definition.json '${local.cfg.cml_controller_url}/api/v0/node_definitions'
       #curl -k -v -X 'POST' -H \"Authorization: Bearer $TOKEN\" -H 'Content-Type: application/json' --data-binary @/root/image_definition.json '${local.cfg.cml_controller_url}/api/v0/image_definitions'
