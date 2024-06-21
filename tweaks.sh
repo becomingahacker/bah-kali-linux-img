@@ -7,6 +7,9 @@ env
 
 flock -w 120 /var/lib/apt/lists/lock -c 'echo waiting for lock'
 
+apt-get update
+apt-get upgrade -y
+
 apt-get install -y beef-xss mtr
 
 # Install Docker
