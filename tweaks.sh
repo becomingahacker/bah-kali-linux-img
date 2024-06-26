@@ -9,6 +9,3 @@ flock -w 120 /var/lib/apt/lists/lock -c 'echo waiting for lock'
 
 apt-get update
 apt-get upgrade -y
-
-chmod u+x /provision/websploit.sh
-/provision/websploit.sh

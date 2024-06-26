@@ -5,13 +5,13 @@ steps:
       - 'CML_ENDPOINT=https://gcp.becomingahacker.com'
       - 'GS_IMAGE_PATH=gs://bah-machine-images/kali-linux'
       # Pristine
-      #- 'SOURCE_IMAGE_FAMILY=kali-linux-cloud-gce-amd64'
+      - 'SOURCE_IMAGE_FAMILY=kali-linux-cloud-gce-amd64'
       # Tweaks
-      - 'SOURCE_IMAGE_FAMILY=kali-linux-cloud-cml-amd64'
+      #- 'SOURCE_IMAGE_FAMILY=kali-linux-cloud-cml-amd64'
       # Pristine
-      #- 'PROVISION_SCRIPT=setup.sh'
+      - 'PROVISION_SCRIPT=setup.sh'
       # Tweaks
-      - 'PROVISION_SCRIPT=tweaks.sh'
+      #- 'PROVISION_SCRIPT=tweaks.sh'
       - 'APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"'
       - 'DEBIAN_FRONTEND=noninteractive'
       - 'TZ=Etc/UTC'
