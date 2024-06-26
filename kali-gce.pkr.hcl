@@ -139,7 +139,7 @@ build {
     }
   }
 
-  # Clean up all cloud-init data.
+  # Clean up all cloud-init data and shutdown cleanly.
   provisioner "shell" {
     inline = [
       "cloud-init clean -c all -l --machine-id",

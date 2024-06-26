@@ -9,7 +9,7 @@
 set -x
 set -e
 
-clear
+#clear
 echo "
 
 ██╗    ██╗███████╗██████╗ ███████╗██████╗ ██╗      ██████╗ ██╗████████╗
@@ -32,7 +32,7 @@ over 500 exercises to learn and practice ethical hacking (penetration testing) s
 "
 
 
-read -n 1 -s -r -p "Press any key to continue the setup..."
+#read -n 1 -s -r -p "Press any key to continue the setup..."
 
 echo " "
 # Setting Up vim with Python Jedi to be used in several training courses
