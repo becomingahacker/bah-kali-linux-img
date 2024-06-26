@@ -146,7 +146,7 @@ build {
       "rm -rf /var/lib/cloud",
       "sync",
       "sync",
-      "shutdown -S now",
+      "shutdown -P now",
     ]
   }
 
