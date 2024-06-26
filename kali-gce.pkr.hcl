@@ -75,8 +75,6 @@ source "googlecompute" "kali-linux-cloud-cml-amd64" {
   ssh_private_key_file    = "secrets/id_ed25519"
   service_account_email   = var.service_account_email
 
-  shutdown_command        = "shutdown -P now"
-
   scopes = [
     "https://www.googleapis.com/auth/cloud-platform",
   ]
