@@ -32,7 +32,5 @@ echo \
 apt-get update
 apt-get install -y google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin google-cloud-cli-kubectl-oidc kubectl
 
-curl -sSL https://websploit.org/install.sh | bash -x
-
-cloud-init clean -c all -l --machine-id
-rm -rf /var/lib/cloud
+chmod u+x /provision/websploit.sh
+/provision/websploit.sh

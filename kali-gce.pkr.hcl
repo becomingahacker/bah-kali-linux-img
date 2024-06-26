@@ -88,26 +88,72 @@ build {
   sources = ["sources.googlecompute.kali-linux-cloud-cml-amd64"]
 
   provisioner "shell" {
-    only           = [
-      "googlecompute.kali-linux-cloud-cml-amd64",
+    inline = [ "mkdir -vp /provision" ]
+  }
+
+  # These are files copied here, rather than in the cloud-init because we don't
+  # want to do any YAML encoding/processing on them.
+  provisioner "file" {
+    source      = "/workspace/setup.sh"
+    destination = "/provision/setup.sh"
+  }
+
+  provisioner "file" {
+    source      = "/workspace/tweaks.sh"
+    destination = "/provision/tweaks.sh"
+  }
+
+  provisioner "file" {
+    source      = "/workspace/websploit.sh"
+    destination = "/provision/websploit.sh"
+  }
+
+  # Let cloud-init finish before running the
+  # main provisioning script.  If cloud-init fails,
+  # output the log and stop the build.
+  provisioner "shell" {
+    inline = [ <<-EOF
+      echo "waiting for cloud-init setup to finish..."
+      cloud-init status --wait || true
+
+      cloud_init_state="$(cloud-init status | awk '/status:/ { print $2 }')"
+
+      if [ "$cloud_init_state" = "done" ]; then
+        echo "cloud-init setup has successfully finished"
+      else
+        echo "cloud-init setup is in unknown state: $cloud_init_state"
+        cloud-init status --long
+        cat /var/log/cloud-init-output.log
+        echo "stopping build..."
+        exit 1
+      fi
+      
+      echo "Starting main provisioning script..."
+      chmod u+x /provision/${var.provision_script}
+      /provision/${var.provision_script}
+    EOF
     ]
+    env = { 
+      APT_OPTS         = "-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"
+      DEBIAN_FRONTEND  ="noninteractive"
+      CFG_GCP_BUCKET   = var.gcs_artifact_bucket
+      CFG_CML_PACKAGE  = var.cml_package
+    }
+  }
 
-    script = var.provision_script
-
-    environment_vars = [
-      "APT_OPTS=\"-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0\"",
-      "DEBIAN_FRONTEND=noninteractive",
+  # Clean up all cloud-init data.
+  provisioner "shell" {
+    inline = [
+      "cloud-init clean -c all -l --machine-id",
+      "rm -rf /var/lib/cloud",
     ]
   }
 
   post-processor "manifest" {
-    only           = [
-      "googlecompute.kali-linux-cloud-cml-amd64",
-    ]
-    output = "manifest.json"
+    output = "/workspace/manifest.json"
     strip_path = true
-    custom_data = {
-      my_custom_data = "example"
-    }
+    #custom_data = {
+    #  foo = "bar"
+    #}
   }
 }

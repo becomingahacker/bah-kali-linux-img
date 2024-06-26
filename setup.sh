@@ -57,6 +57,9 @@ echo -e \"[Service]\nTimeoutStartSec=20sec\" > /etc/systemd/system/networking.se
 # Don't display message when automatically logging in
 touch /root/.hushlogin
 
+chmod u+x /provision/websploit.sh
+/provision/websploit.sh
+
 cat > /etc/cloud/clean.d/10-cml-clean <<EOF
 #!/bin/sh -x
 
@@ -73,6 +76,3 @@ apt-get clean
 
 EOF
 chmod u+x /etc/cloud/clean.d/10-cml-clean
-
-cloud-init clean -c all -l --machine-id
-rm -rf /var/lib/cloud
