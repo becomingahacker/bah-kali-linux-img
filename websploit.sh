@@ -124,7 +124,7 @@ cd Sublist3r
 pip3 install -r requirements.txt
 
 # installing enum4linux-ng
-cd /root/webspoit
+cd /root/websploit
 git clone https://github.com/cddmp/enum4linux-ng && cd enum4linux-ng
 
 
@@ -140,7 +140,7 @@ fi
 
 # Installing NodeGoat
 # cloning the NodeGoat repo
-cd /root/webspoit
+cd /root/websploit
 git clone https://github.com/OWASP/NodeGoat.git
 
 # replacing the docker-compose.yml file with my second bridge network (10.7.7.0/24)
