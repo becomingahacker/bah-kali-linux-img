@@ -166,7 +166,7 @@ python3 setup.py install
 apt install -y zaproxy
 
 #Getting the container info script
-sudo cd /root/websploit
+cd /root/websploit
 curl -sSL https://websploit.org/containers.sh > /root/websploit/containers.sh
 
 chmod +x /root/websploit/containers.sh
