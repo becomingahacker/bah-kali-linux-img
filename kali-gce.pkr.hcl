@@ -144,6 +144,9 @@ build {
     inline = [
       "cloud-init clean -c all -l --machine-id",
       "rm -rf /var/lib/cloud",
+      "sync",
+      "sync",
+      "shutdown -S now",
     ]
   }
 

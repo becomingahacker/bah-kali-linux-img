@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -x -e
+#!/usr/bin/env bash
 
 # WebSploit installation script
 # Author: Omar Ωr Santos
@@ -6,6 +6,8 @@
 # Twitter: @santosomar
 # Version: 3.4
 
+set -x
+set -e
 
 clear
 echo "
