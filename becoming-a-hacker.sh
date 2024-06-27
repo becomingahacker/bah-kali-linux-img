@@ -10,5 +10,5 @@
 set -x
 set -e
 
-/provision/becoming-a-hacker
+cd /provision/becoming-a-hacker
 gcloud storage cp --recursive gs://bah-machine-images/becoming-a-hacker/www/* ./
