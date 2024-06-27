@@ -144,7 +144,7 @@ cd /provision/websploit
 git clone https://github.com/OWASP/NodeGoat.git
 
 # replacing the docker-compose.yml file with my second bridge network (10.7.7.0/24)
-curl -sSL https://websploit.org/nodegoat-docker-compose.yml > /root/websploit/NodeGoat/docker-compose.yml
+curl -sSL https://websploit.org/nodegoat-docker-compose.yml > /provision/websploit/NodeGoat/docker-compose.yml
 
 # downloading the nodegoat.sh script from websploit
 # this will be used manually to setup the NodeGoat environment
@@ -167,7 +167,7 @@ apt install -y zaproxy
 
 #Getting the container info script
 cd /provision/websploit
-curl -sSL https://websploit.org/containers.sh > /root/websploit/containers.sh
+curl -sSL https://websploit.org/containers.sh > /provision/websploit/containers.sh
 
 chmod +x /provision/websploit/containers.sh
 mv  /provision/websploit/containers.sh /usr/local/bin/containers 
