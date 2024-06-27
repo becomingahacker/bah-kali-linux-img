@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# HACK cmm - This script installs requisite software and tools for the WebSploit labs
+# Things are copied into /provision/websploit and cloud-init is meant to copy this directory
+# to the user's home directory or root to make everything available.
+
 # WebSploit installation script
 # Author: Omar Ωr Santos
 # Web: https://websploit.org
@@ -37,7 +41,6 @@ over 500 exercises to learn and practice ethical hacking (penetration testing) s
 echo " "
 # Setting Up vim with Python Jedi to be used in several training courses
 
-cd /provision
 apt update
 apt install -y wget vim vim-python-jedi curl exuberant-ctags git ack-grep python3-pip
 pip3 install pep8 flake8 pyflakes isort yapf Flask
@@ -54,17 +57,16 @@ pip3 install pep8 flake8 pyflakes isort yapf Flask
 #sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 #sudo chmod +x /usr/local/bin/docker-compose
 #
-echo "getting docker-compose.yml from WebSploit.org"
-wget https://websploit.org/docker-compose.yml
+#echo "getting docker-compose.yml from WebSploit.org"
+#wget https://websploit.org/docker-compose.yml
 #
 #
-# instantiating the containers with docker-compose
+# instantiate the containers with docker-compose, but do not start them
 echo "Setting up the containers and internal bridge network"
-docker compose -f docker-compose.yml up -d
+cd /provision/websploit
+docker compose -f docker-compose.yml up -d --no-start
 
 # Cloning the GitHub repos
-mkdir -vp /root/websploit
-cd /root/websploit
 
 # cloning H4cker github
 git clone https://github.com/The-Art-of-Hacking/h4cker.git
@@ -79,7 +81,6 @@ git clone https://github.com/internetwache/GitTools.git
 git clone https://github.com/swisskyrepo/PayloadsAllTheThings.git
 
 # Getting IoTGoat and other IoT firmware for different exercises
-cd /root
 mkdir iot_exercises
 cd iot_exercises
 wget https://github.com/OWASP/IoTGoat/releases/download/v1.0/IoTGoat-raspberry-pi2.img
@@ -108,7 +109,6 @@ pip3 install certspy
 apt install -y jupyter-notebook
 
 #Installing radamnsa
-cd /root/websploit
 git clone https://gitlab.com/akihe/radamsa.git && cd radamsa && make && sudo make install
 
 #Installing EDB
@@ -118,13 +118,13 @@ apt install -y edb-debugger
 apt install -y gobuster
 
 #Installing Sublist3r
-cd /root/websploit
+cd /provision/websploit
 git clone https://github.com/aboul3la/Sublist3r.git
 cd Sublist3r
 pip3 install -r requirements.txt
 
 # installing enum4linux-ng
-cd /root/websploit
+cd /provision/websploit
 git clone https://github.com/cddmp/enum4linux-ng && cd enum4linux-ng
 
 
@@ -140,7 +140,7 @@ fi
 
 # Installing NodeGoat
 # cloning the NodeGoat repo
-cd /root/websploit
+cd /provision/websploit
 git clone https://github.com/OWASP/NodeGoat.git
 
 # replacing the docker-compose.yml file with my second bridge network (10.7.7.0/24)
@@ -148,7 +148,7 @@ curl -sSL https://websploit.org/nodegoat-docker-compose.yml > /root/websploit/No
 
 # downloading the nodegoat.sh script from websploit
 # this will be used manually to setup the NodeGoat environment
-cd /root/websploit/NodeGoat
+cd /provision/websploit/NodeGoat
 wget https://websploit.org/nodegoat.sh
 chmod 744 nodegoat.sh 
 
@@ -157,7 +157,7 @@ pip3 install gorilla-cli
 
 
 #Installing Knock
-cd /root/websploit
+cd /provision/websploit
 git clone https://github.com/guelfoweb/knock.git
 cd knock
 python3 setup.py install
@@ -166,11 +166,11 @@ python3 setup.py install
 apt install -y zaproxy
 
 #Getting the container info script
-cd /root/websploit
+cd /provision/websploit
 curl -sSL https://websploit.org/containers.sh > /root/websploit/containers.sh
 
-chmod +x /root/websploit/containers.sh
-mv /root/websploit/containers.sh /usr/local/bin/containers 
+chmod +x /provision/websploit/containers.sh
+mv  /provision/websploit/containers.sh /usr/local/bin/containers 
 
 #Final confirmation
 sudo /usr/local/bin/containers

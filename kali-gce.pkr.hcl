@@ -88,7 +88,10 @@ build {
   sources = ["sources.googlecompute.kali-linux-cloud-cml-amd64"]
 
   provisioner "shell" {
-    inline = [ "mkdir -vp /provision" ]
+    inline = [ 
+      "mkdir -vp /provision/websploit",
+      "mkdir -vp /provision/becoming-a-hacker" 
+    ]
   }
 
   # These are files copied here, rather than in the cloud-init because we don't
@@ -105,7 +108,17 @@ build {
 
   provisioner "file" {
     source      = "/workspace/websploit.sh"
-    destination = "/provision/websploit.sh"
+    destination = "/provision/websploit/websploit.sh"
+  }
+
+  provisioner "file" {
+    source      = "/workspace/websploit-docker-compose.yml"
+    destination = "/provision/websploit/docker-compose.yml"
+  }
+
+  provisioner "file" {
+    source      = "/workspace/becoming-a-hacker.sh"
+    destination = "/provision/becoming-a-hacker/becoming-a-hacker.sh"
   }
 
   # Let cloud-init finish before running the

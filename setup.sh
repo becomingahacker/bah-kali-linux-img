@@ -57,8 +57,11 @@ echo -e \"[Service]\nTimeoutStartSec=60sec\" > /etc/systemd/system/networking.se
 # Don't display message when automatically logging in
 touch /root/.hushlogin
 
-chmod u+x /provision/websploit.sh
-/provision/websploit.sh
+chmod u+x /provision/websploit/websploit.sh
+/provision/websploit/websploit.sh
+
+chmod u+x /provision/becoming-a-hacker/becoming-a-hacker.sh
+/provision/becoming-a-hacker/becoming-a-hacker.sh
 
 cat > /etc/cloud/clean.d/10-cml-clean <<EOF
 #!/bin/sh -x
