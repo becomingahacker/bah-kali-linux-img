@@ -42,12 +42,14 @@ sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# Add the repository to Apt sources:
+# Add Docker's repository to Apt sources, but leave it disabled.
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  Docker "Docker deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list~ > /dev/null
 sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Install Docker
+sudo apt-get install -y docker.io
 
 # Install gcloud SDK, including Kubernetes
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
@@ -57,8 +59,10 @@ echo \
   tee /etc/apt/sources.list.d/google-cloud-sdk.list
 apt-get update
 apt-get install -y google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin google-cloud-cli-kubectl-oidc kubectl
+
 apt-get install -y zenmap rdap 
 
+# Install tftpd-hpa for TFTP server
 apt remove --purge -y atftpd || true
 apt-get install -y tftpd-hpa
 cat > /etc/default/tftpd-hpa <<EOF
@@ -75,6 +79,9 @@ mkdir -vp /srv/tftp
 chown -R nobody:nogroup /srv/tftp
 
 systemctl enable --now tftpd-hpa.service
+
+# Enable serial console on ttyS1
+systemctl enable --now 'getty@ttyS1'
 
 # Make network timeout shorter to speed up boot if the network is unavailable
 mkdir -p /etc/systemd/system/networking.service.d/

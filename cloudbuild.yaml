@@ -1,7 +1,7 @@
 substitutions:
   # 'pristine' or 'tweaks' - determines the source image family and provision 
   # script, scripts/setup.sh or scripts/tweaks.sh
-  _BUILD_TYPE: 'tweaks'
+  _BUILD_TYPE: 'pristine'
   # The Kali Linux version to use from https://kali.download/cloud-images/
   _KALI_VER: '2025.4'
   # Delete this image with this family if you want to build a new one from Offensive 
@@ -11,8 +11,8 @@ substitutions:
   _GCE_BASE_FAMILY: 'kali-linux-cloud-gce-amd64'
   _CML_ENDPOINT: 'https://becomingahacker.com'
   _GS_IMAGE_PATH: 'gs://bah-machine-images/kali-linux'
-  _GS_CML_IMAGE_PATH: 'gs://bah-libvirt-images-ue1/virl-base-images/kali-linux-new'
-  _GS_CML_IMAGE_DEFINITION_PATH: 'gs://bah-libvirt-images-ue1/virl-base-images/kali-linux-new/kali-linux-new.yaml'
+  _GS_CML_IMAGE_PATH: 'gs://bah-libvirt-images-ue1/virl-base-images/kali-linux'
+  _GS_CML_IMAGE_DEFINITION_PATH: 'gs://bah-libvirt-images-ue1/virl-base-images/kali-linux/kali-linux.yaml'
 
 steps:
   # Download from https://kali.download/cloud-images/current/ and import as GCE image when not already present.
