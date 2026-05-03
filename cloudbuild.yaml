@@ -36,7 +36,7 @@ steps:
       fi
         
       echo "Installing xz-utils for tar extraction..."
-      apt-get update -qq && apt-get install -y -qq xz-utils curl jq
+      apt-get update -qq && apt-get install -y -qq xz-utils curl jq libguestfs-tools
       echo "Downloading Kali generic cloud image from ${KALI_URL}..."
       curl -fsSL -o kali.tar.xz "${KALI_URL}"
       echo "Extracting disk.raw from tarball..."
@@ -48,6 +48,7 @@ steps:
         find . -type f
         exit 1
       fi
+      /workspace/scripts/patch-genericcloud-disk.sh "$DISK_RAW"
       echo "Uploading disk image to ${GCS_IMPORT}..."
       gsutil -q cp "${DISK_RAW}" "${GCS_IMPORT}"
       rm -f "${DISK_RAW}"
