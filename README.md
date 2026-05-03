@@ -24,13 +24,13 @@ Foundations.
 
 E.g.  To delete the pods, from the `bah-foundations-lab` repository:
 
-```
+```shell
 terraform destroy -target module.pod
 ```
 
 This will destroy the pods, and **leave the users, passwords and groups alone**.
 
-```
+```shell
 gcloud compute ssh cml-controller --tunnel-through-iap --plain --ssh-flag='-p1122'
 sudo -i
 

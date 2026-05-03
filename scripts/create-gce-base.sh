@@ -22,6 +22,14 @@ case "$(get_phase)" in
     mkdir -p /etc/cloud/cloud.cfg.d
     printf '%s\n' 'network: {config: disabled}' > /etc/cloud/cloud.cfg.d/99_disable_networking_config.cfg
     rm -f /etc/network/interfaces.d/50-cloud-init
+    # Without cloud-init's rendered fragment, ifupdown has nothing for the GCE NIC and
+    # networking.service fails; metadata then never resolves and cloud-init-network hangs.
+    cat > /etc/network/interfaces.d/99-gce-primary-dhcp <<'IFACE_EOF'
+# GCE virtio NIC — Kali generic cloud images typically expose this as eth0.
+# If your VM only has ens4, change the iface name here (or add a second stanza).
+auto eth0
+iface eth0 inet dhcp
+IFACE_EOF
 
     # Fix initramfs growroot (grep/sed/rm/awk in /bin for growpart)
     cat > /usr/share/initramfs-tools/hooks/growroot << 'GROWROOT_EOF'
