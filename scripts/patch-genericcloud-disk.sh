@@ -15,8 +15,9 @@
 # disk.raw call this script before gsutil cp. If libguestfs fails on the worker,
 # try: export LIBGUESTFS_BACKEND=direct
 #
-# After copying the overlay, runs update-grub inside the guest so /boot/grub/grub.cfg
-# matches /etc/default/grub.d (e.g. serial console). Set SKIP_UPDATE_GRUB=1 to skip.
+# After copying the overlay, sets root password to CHANGEME (lab default; change after
+# boot) and runs update-grub inside the guest so /boot/grub/grub.cfg matches
+# /etc/default/grub.d (e.g. serial console). Set SKIP_UPDATE_GRUB=1 to skip grub only.
 
 set -euo pipefail
 
@@ -52,14 +53,16 @@ for entry in "${entries[@]}"; do
   virt-copy-in -a "$DISK" "$entry" "/$name"
 done
 
-if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
-  if ! command -v virt-customize >/dev/null 2>&1; then
-    echo "error: virt-customize not found; install libguestfs-tools" >&2
-    exit 1
-  fi
-  echo "Running update-grub in guest (virt-customize) ..."
-  virt-customize -a "$DISK" \
-    --run-command 'DEBIAN_FRONTEND=noninteractive update-grub'
+if ! command -v virt-customize >/dev/null 2>&1; then
+  echo "error: virt-customize not found; install libguestfs-tools" >&2
+  exit 1
 fi
+
+echo "Setting root password and guest post-overlay tasks (virt-customize) ..."
+virt_args=(-a "$DISK" --root-password password:CHANGEME)
+if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive update-grub')
+fi
+virt-customize "${virt_args[@]}"
 
 echo "patch-genericcloud-disk: done."
