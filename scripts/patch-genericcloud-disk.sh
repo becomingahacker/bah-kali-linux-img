@@ -47,10 +47,21 @@ if [[ ${#entries[@]} -eq 0 ]]; then
 fi
 
 echo "Applying overlay $OVERLAY -> $DISK ..."
+# virt-copy-in places each *source* path's basename under the destination (like cp -r).
+# Copying host .../overlay/etc into guest /etc would create /etc/etc/..., not merge.
+# So copy each immediate child of overlay/<name>/ into guest /<name>/.
 for entry in "${entries[@]}"; do
   name="$(basename "$entry")"
-  # Merge top-level dirs (etc, boot, ...) onto guest /
-  virt-copy-in -a "$DISK" "$entry" "/$name"
+  if [[ -d "$entry" ]]; then
+    shopt -s dotglob
+    for child in "$entry"/*; do
+      [[ -e "$child" ]] || continue
+      virt-copy-in -a "$DISK" "$child" "/$name"
+    done
+    shopt -u dotglob
+  else
+    virt-copy-in -a "$DISK" "$entry" "/"
+  fi
 done
 
 if ! command -v virt-customize >/dev/null 2>&1; then
