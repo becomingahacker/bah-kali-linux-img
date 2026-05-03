@@ -129,7 +129,10 @@ steps:
         STATUS=$(gcloud compute instances describe "${INSTANCE_NAME}" --zone="${ZONE}" --project="${PROJECT_ID}" --format='value(status)' 2>/dev/null || echo "UNKNOWN")
         echo "Instance status: ${STATUS}"
         if [ "${STATUS}" = "TERMINATED" ]; then break; fi
-        if [ "${STATUS}" != "RUNNING" ]; then echo "Unexpected status: ${STATUS}"; exit 1; fi
+        case "${STATUS}" in
+          RUNNING|STOPPING|STAGING|PROVISIONING) ;;
+          *) echo "Unexpected status: ${STATUS}"; exit 1 ;;
+        esac
         sleep 30
       done
       if [ "${STATUS}" != "TERMINATED" ]; then
