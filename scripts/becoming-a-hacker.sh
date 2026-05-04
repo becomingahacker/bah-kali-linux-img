@@ -6,8 +6,10 @@
 # /provision/becoming-a-hacker and cloud-init is meant to copy this directory to
 # the user's home directory or root to make everything available.
 
+set -euo pipefail
 set -x
-set -e
+
+env
 
 echo "Installing Becoming a Hacker Foundations labs"
 cd /provision/becoming-a-hacker

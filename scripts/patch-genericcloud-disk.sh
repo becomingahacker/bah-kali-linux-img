@@ -22,6 +22,7 @@
 # raw file uploads smaller (holes/sparse where supported). Set SKIP_VIRT_SPARSIFY=1 to skip.
 
 set -euo pipefail
+set -x
 
 DISK="${1:?disk.qcow2 path required}"
 OVERLAY="${2:-${OVERLAY_DIR:-genericcloud-overlay}}"

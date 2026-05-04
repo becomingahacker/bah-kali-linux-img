@@ -2,12 +2,15 @@
 # Creates GCE base image from Kali generic cloud image (README "GCE Base Kali Image").
 # Runs in phases with reboots; state is stored in /root/.gce-base-phase.
 
-set -e
+set -euo pipefail
 set -x
+
 env
 
 export DEBIAN_FRONTEND=noninteractive
 export APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"
+
+PHASE_FILE="/root/.gce-base-phase"
 
 phase() { echo "$1" > "$PHASE_FILE"; }
 get_phase() { cat "$PHASE_FILE" 2>/dev/null || echo "0"; }
