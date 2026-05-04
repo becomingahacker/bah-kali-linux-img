@@ -71,9 +71,13 @@ source "googlecompute" "kali-linux-cloud-cml-amd64" {
     "us-east1",
   ]
 
-  ssh_username            = "root"
-  temporary_key_pair_type = "ed25519"
-  use_iap                 = true
+  ssh_username       = "root"
+  # Must match secrets/id_ed25519.pub in cloud-init user-data below. Do not use
+  # temporary_key_pair_type here: cloud-init replaces root's authorized_keys with
+  # only the keys from user-data, which removes the guest-agent–injected temp key
+  # and breaks SSH (Packer would still offer the temp private key).
+  ssh_private_key_file = "${path.root}/secrets/id_ed25519"
+  use_iap              = true
   service_account_email   = var.service_account_email
 
   scopes = [
