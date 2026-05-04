@@ -37,12 +37,6 @@ variable "provision_script" {
     description = "Provisioning script"
 }
 
-variable "service_account_email" {
-  type        = string
-  default     = ""
-  description = "Service account to use while building."
-}
-
 locals {
   ssh_public_key          = file("${path.root}/secrets/id_ed25519.pub")
 
