@@ -1,0 +1,24 @@
+#!/bin/sh
+
+PREREQ=""
+
+prereqs()
+{
+        echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+        prereqs
+        exit 0
+        ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+copy_exec /usr/bin/grep /bin
+copy_exec /usr/bin/sed /bin
+copy_exec /usr/bin/rm /bin
+copy_exec /usr/bin/awk /bin
+
+exit 0

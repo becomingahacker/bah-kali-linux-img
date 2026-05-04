@@ -72,7 +72,16 @@ fi
 echo "Setting root password and guest post-overlay tasks (virt-customize) ..."
 virt_args=(-a "$DISK" --root-password password:CHANGEME)
 if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
+  # Install linux-base to ensure the correct kernel is used.
+  # linux-base-cloud-amd64 is not compatible with GCP.
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt install -y linux-base-amd64')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove --purge linux-base-cloud-amd64')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt autoremove -y')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive update-grub')
+  # Kali Linux doesn't use the cloud-init network interface, so remove it.
+  virt_args+=(--run-command 'rm -f /etc/network/interfaces.d/50-cloud-init')
+  virt_args+=(--run-command 'chmod u+x /usr/share/initramfs-tools/hooks/growroot')
+  virt_args+=(--run-command 'update-initramfs -u')
 fi
 virt-customize "${virt_args[@]}"
 
