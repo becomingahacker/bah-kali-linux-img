@@ -96,6 +96,7 @@ steps:
     timeout: '3600s'
 
   # Create GCE base image for Packer when not already present (README: "GCE Base Kali Image").
+  # TODO cmm - This can probably go away completely.
   - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
     id: create-gce-base
     script: |
@@ -114,7 +115,7 @@ steps:
       INSTANCE_NAME="kali-gce-base-${BUILD_ID}"
       KALI_VERSION_DASHED="$(tr '.' '-' <<< "${_KALI_VER}")"
       IMAGE_NAME="kali-linux-${KALI_VERSION_DASHED}-$(date +%Y-%m-%d)-cloud-gce-amd64"
-      if gcloud compute images describe-from-family "${_GCE_BASE_FAMILY}" --project="${PROJECT_ID}" --location="${LOCATION}" 2>/dev/null; then
+      if gcloud compute images describe-from-family "${_GCE_BASE_FAMILY}" --project="${PROJECT_ID}" --zone="${ZONE}" 2>/dev/null; then
         echo "Image family ${_GCE_BASE_FAMILY} already exists. Skipping GCE base image creation."
         exit 0
       fi
