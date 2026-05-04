@@ -37,6 +37,12 @@ variable "provision_script" {
     description = "Provisioning script"
 }
 
+variable "service_account_email" {
+  type        = string
+  default     = ""
+  description = "Service account to use while building."
+}
+
 locals {
   ssh_public_key          = file("${path.root}/secrets/id_ed25519.pub")
 
@@ -72,7 +78,8 @@ source "googlecompute" "kali-linux-cloud-cml-amd64" {
   ]
 
   ssh_username            = "root"
-  ssh_private_key_file    = "secrets/id_ed25519"
+  temporary_key_pair_type = "ed25519"
+  use_iap                 = true
   service_account_email   = var.service_account_email
 
   scopes = [
@@ -88,6 +95,7 @@ build {
   sources = ["sources.googlecompute.kali-linux-cloud-cml-amd64"]
 
   provisioner "shell" {
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} bash '{{ .Path }}'"
     inline = [ 
       "mkdir -vp /provision/websploit",
       "mkdir -vp /provision/becoming-a-hacker" 
@@ -115,6 +123,8 @@ build {
   # main provisioning script.  If cloud-init fails,
   # output the log and stop the build.
   provisioner "shell" {
+    source = "sources.googlecompute.kali-linux-cloud-cml-amd64"
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} bash '{{ .Path }}'"
     inline = [ <<-EOF
       echo "waiting for cloud-init setup to finish..."
       cloud-init status --wait || true
@@ -144,6 +154,7 @@ build {
 
   # Clean up all cloud-init data and shutdown cleanly.
   provisioner "shell" {
+    execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} bash '{{ .Path }}'"
     inline = [
       "cloud-init clean -c all -l --machine-id",
       "rm -rf /var/lib/cloud",

@@ -198,6 +198,7 @@ steps:
         -var "project_id=$PROJECT_ID" \
         -var "source_image_family=$SOURCE_IMAGE_FAMILY" \
         -var "provision_script=$PROVISION_SCRIPT" \
+        -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" \
         kali-gce.pkr.hcl
       packer build \
         -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" \
@@ -205,6 +206,7 @@ steps:
         -var "project_id=$PROJECT_ID" \
         -var "source_image_family=$SOURCE_IMAGE_FAMILY" \
         -var "provision_script=$PROVISION_SCRIPT" \
+        -var "service_account_email=$SERVICE_ACCOUNT_EMAIL" \
         kali-gce.pkr.hcl
 
       if [ -f /workspace/manifest.json ]; then
