@@ -16,7 +16,7 @@ substitutions:
 
 steps:
   # Download from https://kali.download/cloud-images/current/ and import as GCE image when not already present.
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
     id: import-kali-generic
     script: |
       #!/usr/bin/env bash
@@ -27,20 +27,14 @@ steps:
 
       KALI_URL="https://kali.download/cloud-images/kali-${_KALI_VER}/kali-linux-${_KALI_VER}-cloud-genericcloud-amd64.tar.xz"
       KALI_VERSION_DASHED="$(tr '.' '-' <<< "${_KALI_VER}")"
-      GCS_IMPORT="gs://bah-machine-images/kali-import/${BUILD_ID}-disk.raw"
+      GCS_IMPORT="gs://bah-machine-images/kali-import/${BUILD_ID}-disk.qcow2"
       IMAGE_NAME="kali-linux-${KALI_VERSION_DASHED}-$(date +%Y-%m-%d)-cloud-genericcloud-amd64"
-
-      export DEBIAN_FRONTEND=noninteractive
-      export APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"
 
       if gcloud compute images describe-from-family "${_GCE_BASE_SOURCE_FAMILY}" --project="${PROJECT_ID}" 2>/dev/null; then
         echo "Image family ${_GCE_BASE_SOURCE_FAMILY} already exists. Skipping GCE base image creation."
         exit 0
       fi
         
-      echo "Installing xz-utils for tar extraction..."
-      apt-get update -qq && apt-get install -y -qq xz-utils curl jq libguestfs-tools
-
       echo "Downloading Kali generic cloud image from ${KALI_URL}..."
       curl -fsSL -o kali.tar.xz "${KALI_URL}"
       echo "Extracting disk.raw from tarball..."
@@ -53,11 +47,16 @@ steps:
         exit 1
       fi
 
-      /workspace/scripts/patch-genericcloud-disk.sh "$DISK_RAW"
+      echo "Converting disk.raw to qcow2 format..."
+      qemu-img convert -O qcow2 "$DISK_RAW" "${DISK_RAW}.qcow2"
+
+      echo "Patching disk image..."
+      /workspace/scripts/patch-genericcloud-disk.sh "${DISK_RAW}.qcow2"
 
       echo "Uploading disk image to ${GCS_IMPORT}..."
-      gsutil -q cp "${DISK_RAW}" "${GCS_IMPORT}"
+      gsutil -q cp "${DISK_RAW}.qcow2" "${GCS_IMPORT}"
       rm -f "${DISK_RAW}"
+      rm -f "${DISK_RAW}.qcow2"
 
       IMPORT_JOB_NAME="image-import-${BUILD_ID}"
       echo 'Importing image into GCP.  This may take 15-30 minutes...'
@@ -94,11 +93,10 @@ steps:
       - 'LOCATION=$LOCATION'
       - 'PROJECT_ID=$PROJECT_ID'
       - 'BUILD_ID=$BUILD_ID'
-      - 'APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"'
     timeout: '3600s'
 
   # Create GCE base image for Packer when not already present (README: "GCE Base Kali Image").
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
     id: create-gce-base
     script: |
       #!/usr/bin/env bash
@@ -234,8 +232,6 @@ steps:
       - 'GS_CML_IMAGE_PATH=$_GS_CML_IMAGE_PATH'
       - 'GS_CML_IMAGE_DEFINITION_PATH=$_GS_CML_IMAGE_DEFINITION_PATH'
       - 'BUILD_TYPE=$_BUILD_TYPE'
-      - 'APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"'
-      - 'DEBIAN_FRONTEND=noninteractive'
       - 'TZ=Etc/UTC'
       - 'PACKER_LOG=1'
       - 'LOCATION=$LOCATION'

@@ -18,10 +18,12 @@
 # After copying the overlay, sets root password to CHANGEME (lab default; change after
 # boot) and runs update-grub inside the guest so /boot/grub/grub.cfg matches
 # /etc/default/grub.d (e.g. serial console). Set SKIP_UPDATE_GRUB=1 to skip grub only.
+# After customization, virt-sparsify --in-place trims zero-filled guest space so the
+# raw file uploads smaller (holes/sparse where supported). Set SKIP_VIRT_SPARSIFY=1 to skip.
 
 set -euo pipefail
 
-DISK="${1:?disk.raw path required}"
+DISK="${1:?disk.qcow2 path required}"
 OVERLAY="${2:-${OVERLAY_DIR:-genericcloud-overlay}}"
 
 if [[ ! -f "$DISK" ]]; then
@@ -88,5 +90,10 @@ if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
   virt_args+=(--run-command 'update-initramfs -u')
 fi
 virt-customize "${virt_args[@]}"
+
+if [[ "${SKIP_VIRT_SPARSIFY:-0}" != "1" ]]; then
+  echo "Sparsifying disk (virt-sparsify --in-place) ..."
+  virt-sparsify --in-place "$DISK"
+fi
 
 echo "patch-genericcloud-disk: done."

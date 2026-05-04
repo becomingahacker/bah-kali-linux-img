@@ -2,4 +2,5 @@
 # If your VM only has ens4, change the iface name here (or add a second stanza).
 auto eth0
 iface eth0 inet dhcp
-iface eth0 inet6 dhcp
+# HACK cmm - GCP does not support DHCPv6 natively.  Enable where required.
+# iface eth0 inet6 dhcp
