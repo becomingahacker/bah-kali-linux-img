@@ -20,5 +20,7 @@ copy_exec /usr/bin/grep /bin
 copy_exec /usr/bin/sed /bin
 copy_exec /usr/bin/rm /bin
 copy_exec /usr/bin/awk /bin
+# Required by /scripts/local-bottom/growroot (cloud-guest-utils); hook must copy it into initramfs.
+copy_exec /usr/bin/growpart
 
 exit 0

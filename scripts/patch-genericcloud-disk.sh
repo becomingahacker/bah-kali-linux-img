@@ -83,9 +83,11 @@ if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt install -y linux-base-amd64')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove -y --purge linux-base-cloud-amd64')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt autoremove -y')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt clean -y')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive update-grub')
-  # Kali Linux doesn't use the cloud-init network interface, so remove it.
+  # Kali Linux hangs when the cloud-init network interface is present.  DHCPv6 related.
   virt_args+=(--run-command 'rm -f /etc/network/interfaces.d/50-cloud-init')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt install -y cloud-guest-utils')
   virt_args+=(--run-command 'chmod u+x /usr/share/initramfs-tools/hooks/growroot')
   virt_args+=(--run-command 'update-initramfs -u')
 fi

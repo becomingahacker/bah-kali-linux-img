@@ -83,20 +83,8 @@ systemctl enable --now tftpd-hpa.service
 # Enable serial console on ttyS1
 systemctl enable --now 'getty@ttyS1'
 
-# GCE: ensure primary NIC has DHCP if base image removed cloud-init's fragment only.
-if [ ! -f /etc/network/interfaces.d/99-gce-primary-dhcp ]; then
-  cat > /etc/network/interfaces.d/99-gce-primary-dhcp <<'IFACE_EOF'
-auto eth0
-iface eth0 inet dhcp
-IFACE_EOF
-fi
-
-# Make network timeout shorter to speed up boot if the network is unavailable
-mkdir -p /etc/systemd/system/networking.service.d/
-cat > /etc/systemd/system/networking.service.d/timeout.conf <<'EOF'
-[Service]
-TimeoutStartSec=60
-EOF
+# growroot in initramfs needs growpart (this hook copy_exec's it; package must be present at update-initramfs)
+apt-get install -y cloud-guest-utils
 
 # Don't display message when automatically logging in
 touch /root/.hushlogin

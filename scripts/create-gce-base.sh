@@ -20,6 +20,7 @@ case "$(get_phase)" in
 
     apt update -y
     apt upgrade -y
+    apt clean
 
     phase 1
     echo "Phase 1 done. Rebooting..."
