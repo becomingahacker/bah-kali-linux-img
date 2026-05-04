@@ -30,6 +30,9 @@ steps:
       GCS_IMPORT="gs://bah-machine-images/kali-import/${BUILD_ID}-disk.raw"
       IMAGE_NAME="kali-linux-${KALI_VERSION_DASHED}-$(date +%Y-%m-%d)-cloud-genericcloud-amd64"
 
+      export DEBIAN_FRONTEND=noninteractive
+      export APT_OPTS="-o Dpkg::Options::=--force-confmiss -o Dpkg::Options::=--force-confnew -o DPkg::Progress-Fancy=0 -o APT::Color=0"
+
       if gcloud compute images describe-from-family "${_GCE_BASE_SOURCE_FAMILY}" --project="${PROJECT_ID}" 2>/dev/null; then
         echo "Image family ${_GCE_BASE_SOURCE_FAMILY} already exists. Skipping GCE base image creation."
         exit 0
