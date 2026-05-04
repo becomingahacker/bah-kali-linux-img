@@ -69,14 +69,17 @@ if ! command -v virt-customize >/dev/null 2>&1; then
   exit 1
 fi
 
+# HACK cmm - virt-customize is incredibly slow, since it runs in a Cloud Build
+# container without /dev/kvm.  To speed this up, we need to run these commands
+# in a VM.  Hopefully, doing this is relatively rare.
 echo "Setting root password and guest post-overlay tasks (virt-customize) ..."
 virt_args=(-a "$DISK" --root-password password:CHANGEME)
 if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
   # Install linux-base to ensure the correct kernel is used.
   # linux-base-cloud-amd64 is not compatible with GCP.
-  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt update -y')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt update -qq')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt install -y linux-base-amd64')
-  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove --purge linux-base-cloud-amd64')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove -y --purge linux-base-cloud-amd64')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt autoremove -y')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive update-grub')
   # Kali Linux doesn't use the cloud-init network interface, so remove it.

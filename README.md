@@ -8,6 +8,8 @@ Foundations.
 
 ## Creating a Kali Linux Image
 
+* If you want to download a fresh image from Offensive Security, remove images
+  with the `TBD` image family.
 * Edit `scripts/setup.sh` or `scripts/tweaks.sh` with your desired changes.
 * Edit `cloudbuild.yaml` and change the `_BUILD_TYPE` to `pristine` or `tweaks`.
   Depending on the setting, either `scripts/setup.sh` or `scripts/tweaks.sh`
