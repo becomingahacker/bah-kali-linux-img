@@ -96,7 +96,7 @@ steps:
     timeout: '3600s'
 
   # Create GCE base image for Packer when not already present (README: "GCE Base Kali Image").
-  # TODO cmm - This can probably go away completely.
+  # TODO cmm - This can probably go away completely and consolidate into the Packer build.
   - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
     id: create-gce-base
     script: |

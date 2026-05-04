@@ -117,7 +117,6 @@ build {
   # main provisioning script.  If cloud-init fails,
   # output the log and stop the build.
   provisioner "shell" {
-    source = "sources.googlecompute.kali-linux-cloud-cml-amd64"
     execute_command = "chmod +x {{ .Path }}; sudo env {{ .Vars }} bash '{{ .Path }}'"
     inline = [ <<-EOF
       echo "waiting for cloud-init setup to finish..."
