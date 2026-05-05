@@ -4,8 +4,9 @@
 # This script is used to setup the Kali Linux image to make it suitable for the
 # Becoming a Hacker Foundations labs and building a new pristine image.
 
-set -e
+set -euo pipefail
 set -x
+
 env
 
 # Wait for possible auto updates to complete.  This may not be needed
@@ -27,6 +28,10 @@ timedatectl set-timezone America/New_York
 # Not including google-guest-agent on purpose
 # Ignore errors; we will fix in the tweak cycle
 apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw usbutils beef-xss mtr || true
+
+# Boot into graphical.target
+systemctl set-default graphical.target
+systemctl enable lightdm.service
 
 # Disable Bluetooth
 systemctl disable blueman-mechanism.service
@@ -80,26 +85,12 @@ chown -R nobody:nogroup /srv/tftp
 
 systemctl enable --now tftpd-hpa.service
 
-# Enable serial console on ttyS1
+# Enable serial console on ttyS0 and ttyS1
+systemctl enable --now 'getty@ttyS0'
 systemctl enable --now 'getty@ttyS1'
-
-# growroot in initramfs needs growpart (this hook copy_exec's it; package must be present at update-initramfs)
-apt-get install -y cloud-guest-utils
 
 # Don't display message when automatically logging in
 touch /root/.hushlogin
-
-# Ensure cisco user exists with a proper home directory so X/lightdm and
-# gnome-keyring can write .Xauthority and ~/.local/share/keyrings.
-if ! getent passwd cisco >/dev/null 2>&1; then
-  useradd -m -s /bin/bash -G users,adm,sudo cisco
-fi
-if [ -d /home/cisco ]; then
-  chown -R cisco:cisco /home/cisco
-  chmod 755 /home/cisco
-fi
-# Lock until deploy-time cloud-init sets password (e.g. CML node-definition)
-passwd -l cisco 2>/dev/null || true
 
 mkdir -vp /provision/websploit
 cd /provision/websploit

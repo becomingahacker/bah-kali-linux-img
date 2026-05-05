@@ -29,7 +29,7 @@ sim:
     boot_disk_size: 64
     nic_driver: virtio
     video:
-      model: qxl
+      model: virtio
       memory: 16
     efi_boot: false
 boot:

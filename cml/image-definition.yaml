@@ -4,5 +4,4 @@ description: 'Kali Linux'
 label: kali-linux
 disk_image: DISK_IMAGE_NAME
 read_only: false
-disk_subfolder: kali-linux
 schema_version: 0.0.1
