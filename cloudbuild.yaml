@@ -166,6 +166,7 @@ steps:
 
   # This image can be made with cloud-builder/Dockerfile   
   - name: 'us-east1-docker.pkg.dev/gcp-asigbahgcp-nprd-47930/bah-builders/bah-kali-linux-img'
+    id: build-kali-linux-cml-image-with-packer
     script: |
       #!/usr/bin/env bash
 
@@ -249,3 +250,4 @@ options:
   logging: GCS_ONLY
   logStreamingOption: STREAM_ON
   automapSubstitutions: true
+  machineType: 'E2_HIGHCPU_8'

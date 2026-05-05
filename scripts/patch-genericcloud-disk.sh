@@ -81,9 +81,11 @@ if [[ "${SKIP_UPDATE_GRUB:-0}" != "1" ]]; then
   # Install linux-base to ensure the correct kernel is used.
   # linux-base-cloud-amd64 is not compatible with GCP.
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt update -qq')
-  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt install -y linux-base-amd64')
-  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove -y --purge linux-base-cloud-amd64')
-  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt autoremove -y')
+  # Install the full linux-image-amd64 flavour so /lib/modules/*/virtio_gpu.ko exists.
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt install -y linux-image-amd64')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove -y --purge linux-image-cloud-amd64')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt remove -y --purge linux-image-*kali-cloud* linux-headers-*kali-cloud*')
+  virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt autoremove --purge -y')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive apt clean -y')
   virt_args+=(--run-command 'DEBIAN_FRONTEND=noninteractive update-grub')
   # Kali Linux hangs when the cloud-init network interface is present.  DHCPv6 related.
