@@ -68,16 +68,8 @@ configuration:
 
           users:
             - default
-            - name: cisco
-              gecos: Cisco
-              groups: users, adm, sudo
-              plain_text_passwd: cisco
-              lock_passwd: false
-              shell: /bin/bash
 
           runcmd:
-            - [ chown, -R, cisco:cisco, /home/cisco ]
-            - [ chmod, 755, /home/cisco ]
             - dpkg-reconfigure -f noninteractive xorg
         editable: true
 schema_version: 0.0.1
