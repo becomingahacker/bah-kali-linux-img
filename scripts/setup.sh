@@ -27,7 +27,7 @@ timedatectl set-timezone America/New_York
 # https://www.kali.org/docs/general-use/metapackages/
 # Not including google-guest-agent on purpose
 # Ignore errors; we will fix in the tweak cycle
-apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw usbutils beef-xss mtr || true
+apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw usbutils beef-xss mtr cisco7crack || true
 
 # Boot into graphical.target
 systemctl set-default graphical.target
