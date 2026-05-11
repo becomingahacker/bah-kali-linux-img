@@ -15,4 +15,6 @@ apt update
 apt upgrade -y
 
 apt install -y \
-    systemd-timesyncd
+    systemd-timesyncd \
+    pulseaudio-utils 
+
