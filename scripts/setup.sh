@@ -12,35 +12,17 @@ env
 # Wait for possible auto updates to complete.  This may not be needed
 flock -w 120 /var/lib/apt/lists/lock -c 'echo waiting for lock'
 
-apt-get update
-apt-get upgrade -y
+apt update
+apt upgrade -y
 
 # Set the locale to en_US.UTF-8
 printf "LANG=en_US.UTF-8\nLC_ALL=en_US.UTF-8\n" > /etc/default/locale
-apt-get install -y locales-all
+apt install -y locales-all
 locale-gen --purge "en_US.UTF-8"
 dpkg-reconfigure locales
 
 # Set the timezone to Eastern
 timedatectl set-timezone America/New_York
-
-# https://www.kali.org/docs/general-use/metapackages/
-# Not including google-guest-agent on purpose
-# Ignore errors; we will fix in the tweak cycle
-# Install tigervnc for remote desktop access with Guacamole.
-apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw \
-  usbutils beef-xss mtr cisco7crack \
-  google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin \
-  google-cloud-cli-kubectl-oidc kubectl \
-  zenmap rdap \
-  tigervnc-standalone-server tigervnc-common || true
-
-# Boot into graphical.target
-systemctl set-default graphical.target
-systemctl enable lightdm.service
-
-# Disable Bluetooth
-systemctl disable blueman-mechanism.service
 
 # Install Docker
 # Add Docker's official GPG key:
@@ -53,10 +35,6 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 echo \
   Docker "Docker deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list~ > /dev/null
-sudo apt-get update
-
-# Install Docker, but not commmunity edition.
-sudo apt-get install -y docker.io
 
 # Install gcloud SDK, including Kubernetes
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
@@ -64,11 +42,24 @@ echo \
   "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt \
   cloud-sdk main" | \
   tee /etc/apt/sources.list.d/google-cloud-sdk.list
-apt-get update
+apt update
+
+# https://www.kali.org/docs/general-use/metapackages/
+# Not including google-guest-agent on purpose
+# Ignore errors; we will fix in the tweak cycle
+# Install Docker, but not commmunity edition.
+# Install tigervnc for remote desktop access with Guacamole.
+apt install -y kali-desktop-xfce kali-linux-default pciutils lshw \
+  lightdm usbutils beef-xss mtr cisco7crack \
+  google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin \
+  google-cloud-cli-kubectl-oidc kubectl \
+  zenmap rdap \
+  docker.io \
+  tigervnc-standalone-server tigervnc-common || true
 
 # Install tftpd-hpa for TFTP server
 apt remove --purge -y atftpd || true
-apt-get install -y tftpd-hpa
+apt install -y tftpd-hpa
 cat > /etc/default/tftpd-hpa <<EOF
 # /etc/default/tftpd-hpa
 
@@ -83,6 +74,13 @@ mkdir -vp /srv/tftp
 chown -R nobody:nogroup /srv/tftp
 
 systemctl enable --now tftpd-hpa.service
+
+# Boot into graphical.target
+systemctl set-default graphical.target
+systemctl enable lightdm.service
+
+# Disable Bluetooth
+systemctl disable blueman-mechanism.service
 
 # Enable serial console on ttyS1.  ttyS0 logs in automatically as root.
 systemctl enable --now 'getty@ttyS1'
@@ -111,14 +109,15 @@ sudo rm /etc/hostname
 
 sudo rm /root/.zsh_history
 sudo rm /root/.bash_history
+# Remove Google Cloud SDK configs, including credentials.
 sudo rm -rf /root/.config/gcloud || true
 sudo truncate -s 0 /root/.ssh/authorized_keys
 
 sudo userdel -f -r kali || true
 
 # Clean up packages that can be removed
-apt-get autoremove --purge -y
-apt-get clean
+apt autoremove --purge -y
+apt clean
 
 EOF
 chmod u+x /etc/cloud/clean.d/10-cml-clean
