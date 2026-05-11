@@ -18,3 +18,6 @@ apt install -y \
     systemd-timesyncd \
     pulseaudio-utils 
 
+# Boot into multi-user.target
+systemctl set-default multi-user.target
+systemctl disable lightdm.service

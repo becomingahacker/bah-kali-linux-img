@@ -75,9 +75,9 @@ chown -R nobody:nogroup /srv/tftp
 
 systemctl enable --now tftpd-hpa.service
 
-# Boot into graphical.target
-systemctl set-default graphical.target
-systemctl enable lightdm.service
+# Boot into multi-user.target
+systemctl set-default multi-user.target
+#systemctl enable lightdm.service
 
 # Disable Bluetooth
 systemctl disable blueman-mechanism.service
