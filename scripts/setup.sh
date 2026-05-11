@@ -88,18 +88,18 @@ systemctl enable --now 'getty@ttyS1'
 # Don't display message when automatically logging in
 touch /root/.hushlogin
 
-mkdir -vp /provision/websploit
-cd /provision/websploit
-git clone https://github.com/The-Art-of-Hacking/websploit.git
-cd websploit
-sed -i 's/print_banner/#print_banner/g' install.sh
-chmod u+x install.sh
-# FIXME cmm - Temporarily disable websploit for troubleshooting
+#mkdir -vp /provision/websploit
+#cd /provision/websploit
+#git clone https://github.com/The-Art-of-Hacking/websploit.git
+#cd websploit
+#sed -i 's/print_banner/#print_banner/g' install.sh
+#chmod u+x install.sh
+## FIXME cmm - Temporarily disable websploit for troubleshooting
 #./install.sh
 
-# Copy provisioning for Becoming a Hacker Foundations labs
-chmod u+x /provision/becoming-a-hacker/becoming-a-hacker.sh
-/provision/becoming-a-hacker/becoming-a-hacker.sh
+## Copy provisioning for Becoming a Hacker Foundations labs
+#chmod u+x /provision/becoming-a-hacker/becoming-a-hacker.sh
+#/provision/becoming-a-hacker/becoming-a-hacker.sh
 
 cat > /etc/cloud/clean.d/10-cml-clean <<EOF
 #!/bin/sh -x
