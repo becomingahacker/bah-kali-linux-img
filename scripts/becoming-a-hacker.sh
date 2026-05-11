@@ -11,6 +11,6 @@ set -x
 
 env
 
-echo "Installing Becoming a Hacker Foundations labs"
+echo "Copying Becoming a Hacker Foundations labs"
 cd /provision/becoming-a-hacker
 gcloud storage cp --recursive gs://bah-machine-images/becoming-a-hacker/www/* ./

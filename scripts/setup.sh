@@ -27,7 +27,13 @@ timedatectl set-timezone America/New_York
 # https://www.kali.org/docs/general-use/metapackages/
 # Not including google-guest-agent on purpose
 # Ignore errors; we will fix in the tweak cycle
-apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw usbutils beef-xss mtr cisco7crack || true
+# Install tigervnc for remote desktop access with Guacamole.
+apt-get install -y kali-desktop-xfce kali-linux-default pciutils lshw \
+  usbutils beef-xss mtr cisco7crack \
+  google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin \
+  google-cloud-cli-kubectl-oidc kubectl \
+  zenmap rdap \
+  tigervnc-standalone-server tigervnc-common || true
 
 # Boot into graphical.target
 systemctl set-default graphical.target
@@ -36,12 +42,8 @@ systemctl enable lightdm.service
 # Disable Bluetooth
 systemctl disable blueman-mechanism.service
 
-# Enable serial console on ttyS1
-systemctl enable --now 'getty@ttyS1'
-
 # Install Docker
 # Add Docker's official GPG key:
-sudo apt-get update
 sudo apt-get install -y ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
@@ -53,7 +55,7 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list~ > /dev/null
 sudo apt-get update
 
-# Install Docker
+# Install Docker, but not commmunity edition.
 sudo apt-get install -y docker.io
 
 # Install gcloud SDK, including Kubernetes
@@ -63,9 +65,6 @@ echo \
   cloud-sdk main" | \
   tee /etc/apt/sources.list.d/google-cloud-sdk.list
 apt-get update
-apt-get install -y google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin google-cloud-cli-kubectl-oidc kubectl
-
-apt-get install -y zenmap rdap 
 
 # Install tftpd-hpa for TFTP server
 apt remove --purge -y atftpd || true
@@ -85,8 +84,7 @@ chown -R nobody:nogroup /srv/tftp
 
 systemctl enable --now tftpd-hpa.service
 
-# Enable serial console on ttyS0 and ttyS1
-systemctl enable --now 'getty@ttyS0'
+# Enable serial console on ttyS1.  ttyS0 logs in automatically as root.
 systemctl enable --now 'getty@ttyS1'
 
 # Don't display message when automatically logging in
@@ -101,6 +99,7 @@ chmod u+x install.sh
 # FIXME cmm - Temporarily disable websploit for troubleshooting
 #./install.sh
 
+# Copy provisioning for Becoming a Hacker Foundations labs
 chmod u+x /provision/becoming-a-hacker/becoming-a-hacker.sh
 /provision/becoming-a-hacker/becoming-a-hacker.sh
 
@@ -112,6 +111,7 @@ sudo rm /etc/hostname
 
 sudo rm /root/.zsh_history
 sudo rm /root/.bash_history
+sudo rm -rf /root/.config/gcloud || true
 sudo truncate -s 0 /root/.ssh/authorized_keys
 
 sudo userdel -f -r kali || true
