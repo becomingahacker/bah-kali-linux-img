@@ -1,7 +1,7 @@
 substitutions:
   # 'pristine' or 'tweaks' - determines the source image family and provision 
   # script, scripts/setup.sh or scripts/tweaks.sh
-  _BUILD_TYPE: 'pristine'
+  _BUILD_TYPE: 'tweaks'
   # The Kali Linux version to use from https://kali.download/cloud-images/
   _KALI_VER: '2026.1'
   # Delete this image with this family if you want to build a new one from Offensive 

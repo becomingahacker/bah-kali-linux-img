@@ -11,5 +11,8 @@ env
 
 flock -w 120 /var/lib/apt/lists/lock -c 'echo waiting for lock'
 
-apt-get update
-apt-get upgrade -y
+apt update
+apt upgrade -y
+
+apt install -y \
+    systemd-timesyncd

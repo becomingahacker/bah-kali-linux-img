@@ -53,7 +53,7 @@ apt install -y kali-desktop-xfce kali-linux-default pciutils lshw \
   lightdm usbutils beef-xss mtr cisco7crack \
   google-cloud-cli google-cloud-cli-gke-gcloud-auth-plugin \
   google-cloud-cli-kubectl-oidc kubectl \
-  zenmap rdap \
+  zenmap rdap systemd-timesyncd \
   docker.io \
   tigervnc-standalone-server tigervnc-common || true
 
