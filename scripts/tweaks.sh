@@ -14,10 +14,4 @@ flock -w 120 /var/lib/apt/lists/lock -c 'echo waiting for lock'
 apt update
 apt upgrade -y
 
-apt install -y \
-    systemd-timesyncd \
-    pulseaudio-utils 
-
-# Boot into multi-user.target
-systemctl set-default multi-user.target
-systemctl disable lightdm.service
+systemctl enable cloud-init.target

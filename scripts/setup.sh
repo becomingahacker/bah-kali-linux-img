@@ -24,6 +24,9 @@ dpkg-reconfigure locales
 # Set the timezone to Eastern
 timedatectl set-timezone America/New_York
 
+# Permanently enable cloud-init
+systemctl enable cloud-init.target
+
 # Install Docker
 # Add Docker's official GPG key:
 sudo apt install -y ca-certificates curl gpg
