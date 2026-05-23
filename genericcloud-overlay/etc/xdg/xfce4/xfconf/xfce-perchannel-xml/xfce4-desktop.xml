@@ -1,25 +1,3 @@
-#!/bin/bash
-
-# Tweaks script for Kali Linux
-# This script is used to tweak the Kali Linux image to make it suitable for the
-# Becoming a Hacker Foundations labs without rebuilding an entire new image.
-
-set -euo pipefail
-set -x
-
-env
-
-flock -w 120 /var/lib/apt/lists/lock -c 'echo waiting for lock'
-
-apt update
-apt upgrade -y
-
-systemctl enable cloud-init.target
-
-# Set custom desktop wallpaper as the default for all XFCE sessions.
-install -Dm644 /provision/custom-desktop.png /usr/share/backgrounds/custom-desktop.png
-mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
-cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'XFCE'
 <?xml version="1.0" encoding="UTF-8"?>
 
 <channel name="xfce4-desktop" version="1.0">
@@ -52,4 +30,3 @@ cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'XFCE'
     </property>
   </property>
 </channel>
-XFCE

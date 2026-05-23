@@ -117,6 +117,11 @@ build {
     destination = "/provision/becoming-a-hacker/becoming-a-hacker.sh"
   }
 
+  provisioner "file" {
+    source      = "/workspace/files/custom-desktop.png"
+    destination = "/provision/custom-desktop.png"
+  }
+
   # Let cloud-init finish before running the
   # main provisioning script.  If cloud-init fails,
   # output the log and stop the build.
