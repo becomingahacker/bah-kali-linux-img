@@ -16,40 +16,4 @@ apt upgrade -y
 
 systemctl enable cloud-init.target
 
-# Set custom desktop wallpaper as the default for all XFCE sessions.
-install -Dm644 /provision/custom-desktop.png /usr/share/backgrounds/custom-desktop.png
-mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
-cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'XFCE'
-<?xml version="1.0" encoding="UTF-8"?>
-
-<channel name="xfce4-desktop" version="1.0">
-  <property name="backdrop" type="empty">
-    <property name="screen0" type="empty">
-      <property name="monitorVNC-0" type="empty">
-        <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/usr/share/backgrounds/custom-desktop.png"/>
-          <property name="image-style" type="int" value="5"/>
-        </property>
-      </property>
-      <property name="monitorVirtual-1" type="empty">
-        <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/usr/share/backgrounds/custom-desktop.png"/>
-          <property name="image-style" type="int" value="5"/>
-        </property>
-      </property>
-      <property name="monitorVirtual1" type="empty">
-        <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/usr/share/backgrounds/custom-desktop.png"/>
-          <property name="image-style" type="int" value="5"/>
-        </property>
-      </property>
-      <property name="monitor0" type="empty">
-        <property name="workspace0" type="empty">
-          <property name="last-image" type="string" value="/usr/share/backgrounds/custom-desktop.png"/>
-          <property name="image-style" type="int" value="5"/>
-        </property>
-      </property>
-    </property>
-  </property>
-</channel>
-XFCE
+install -d -m 755 -o root -g root /etc/sslh
